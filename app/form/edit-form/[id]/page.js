@@ -104,7 +104,7 @@ const EditForm = ({ params }) => {
     const sectionIndex = name?.split("-")?.[1];
     const questionIndex = name?.split("-")?.[2];
     const newItem = _.isEmpty(
-      dataForm?.sections?.[sectionIndex]?.question?.[questionIndex]
+      dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
     )
       ? true
       : false;
@@ -144,7 +144,7 @@ const EditForm = ({ params }) => {
       };
       let postURL = newItem
         ? `${url}api/dashboard/questions/`
-        : `${url}api/dashboard/questions/${dataForm?.sections?.[sectionIndex]?.question?.[questionIndex]?.id}`;
+        : `${url}api/dashboard/questions/${dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]?.id}`;
       let res = await axios.post(postURL, params, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
@@ -158,16 +158,22 @@ const EditForm = ({ params }) => {
     }
   };
 
-  const handleBlur = (e) => {
-    console.log("check:e.target.name :", { check: e.target.name });
-    if (e?.target?.name === "formTitle") {
+  const handleBlur = ({ e, name }) => {
+    // console.log("check:e.target.name :", { check: e.target.name });
+    if (e?.target?.name === "formTitle" || name === "formTitle") {
       postForm();
     }
-    if (e?.target?.name?.includes("sectionName")) {
+    if (
+      e?.target?.name?.includes("sectionName") ||
+      name?.includes("sectionName")
+    ) {
       postSection(e?.target?.name);
     }
     if (e?.target?.name?.includes("question")) {
       postQuestion(e?.target?.name);
+    }
+    if (name?.includes("question")) {
+      postQuestion(name);
     }
   };
 
@@ -227,7 +233,7 @@ const EditForm = ({ params }) => {
                   />
                 }
               >
-                <Form.Item label="Question Type" name={[field.name, "qType"]}>
+                {/* <Form.Item label="Question Type" name={[field.name, "qType"]}>
                   <Select
                     options={[
                       {
@@ -237,24 +243,27 @@ const EditForm = ({ params }) => {
                       { label: "WSIWYG", value: "WSIWYG" },
                     ]}
                   />
+                </Form.Item> */}
+                {/* {sectionValues?.[sectionField.name]?.questions?.[field.name]
+                  ?.qType === "Simple Question" ? ( */}
+                <Form.Item label="Question" name={[field.name, "question"]}>
+                  <Input
+                    name={`questionQuestion-${sectionField.name}-${field.name}`}
+                    onBlur={(e) => handleBlur({ e: e })}
+                  />
                 </Form.Item>
-                {sectionValues?.[sectionField.name]?.questions?.[field.name]
-                  ?.qType === "Simple Question" ? (
-                  <Form.Item label="Question" name={[field.name, "question"]}>
-                    <Input
-                      name={`questionQuestion-${sectionField.name}-${field.name}`}
-                      onBlur={handleBlur}
-                    />
-                  </Form.Item>
-                ) : sectionValues?.[sectionField.name]?.questions?.[field.name]
-                    ?.qType === "WSIWYG" ? (
-                  <Form.Item label="Question" name={[field.name, "question"]}>
-                    <CKEditor
-                      name={`questionQuestion-${sectionField.name}-${field.name}`}
-                      onBlur={handleBlur}
-                    />
-                  </Form.Item>
-                ) : null}
+                {/* ) : sectionValues?.[sectionField.name]?.questions?.[field.name]
+                    ?.qType === "WSIWYG" ? ( */}
+                <Form.Item
+                  label="Description"
+                  name={[field.name, "description"]}
+                >
+                  <CKEditor
+                    name={`questionDescription-${sectionField.name}-${field.name}`}
+                    onBlur={handleBlur}
+                  />
+                </Form.Item>
+                {/* ) : null} */}
 
                 <Form.Item label="Type" name={[field.name, "type"]}>
                   <Select
@@ -372,7 +381,7 @@ const EditForm = ({ params }) => {
           }}
         >
           <Form.Item label="Form Title" name={"formTitle"}>
-            <Input name={"formTitle"} onBlur={handleBlur} />
+            <Input name={"formTitle"} onBlur={(e) => handleBlur({ e: e })} />
           </Form.Item>
           <Form.List name="sections">
             {(sectionFields, { add: addSection, remove: removeSection }) => (
@@ -404,7 +413,7 @@ const EditForm = ({ params }) => {
                     >
                       <Input
                         name={`sectionName-${field.name}`}
-                        onBlur={handleBlur}
+                        onBlur={(e) => handleBlur({ e: e })}
                       />
                     </Form.Item>
                     {questionComponent({ sectionField: field })}

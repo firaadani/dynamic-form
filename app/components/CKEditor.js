@@ -3,7 +3,7 @@ import React, { Component } from "react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import Editor from "ckeditor5-custom-build/build/ckeditor";
 
-const EditorComponent = () => {
+const EditorComponent = ({ name, onBlur }) => {
   return (
     <CKEditor
       config={{
@@ -31,6 +31,7 @@ const EditorComponent = () => {
       }}
       onBlur={(event, editor) => {
         console.log("Blur.", editor);
+        onBlur({ name: name });
       }}
       onFocus={(event, editor) => {
         console.log("Focus.", editor);
