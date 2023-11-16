@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(
+      to bottom,
+      transparent,
+      rgb(var(--background-end-rgb))
+    )
+    rgb(var(--background-start-rgb));
+  overflow: auto; /* Hide scrollbars */
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+.ant-rate-star.ant-rate-star-full,
+.ant-rate-star.ant-rate-star-zero,
+.ant-rate-star.ant-rate-star-half.ant-rate-star-active {
+  transition: transform 0s;
+  transform: scale(0.7);
+}
+
+.ant-rate-star.ant-rate-star-half.ant-rate-star-active:hover {
+  transform: scale(0.7);
+}
+
+.ant-rate-star.ant-rate-star-full:hover {
+  transform: scale(0.7);
+}
+
+.ant-rate-star.ant-rate-star-zero:hover {
+  transform: scale(0.7);
+}
+
+.ant-rate .ant-rate-star:not(:last-child) {
+  margin-inline-end: 0px;
+}
+
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #000; /* Change this to your desired text color */
+}
+
+.ant-tabs-tab ant-tabs-tab-active {
+  border-bottom: "2px solid black";
+}
+
+.ant-tabs .ant-tabs-tab-btn {
+  color: rgba(0, 0, 0, 0.5);
+}
