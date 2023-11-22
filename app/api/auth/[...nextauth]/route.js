@@ -28,7 +28,7 @@ export const authOptions = {
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         const res = await fetch(
-          "https://api-form.naufalibnusalam.my.id/api/dashboard/login",
+          "https://api-form.pexina.id/api/dashboard/login",
           {
             method: "POST",
             body: JSON.stringify(credentials),
