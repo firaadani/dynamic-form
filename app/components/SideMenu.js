@@ -45,10 +45,20 @@ const SideMenu = () => {
             User Management
           </Link>
           <Link
-            href={`/form`}
-            className={pathname.includes("/form") ? "text-indigo-500" : ""}
+            href={`/create-form`}
+            className={
+              pathname.includes("/create-form") ? "text-indigo-500" : ""
+            }
           >
-            Form
+            Create Form
+          </Link>
+          <Link
+            href={`/answer-form`}
+            className={
+              pathname.includes("/answer-form") ? "text-indigo-500" : ""
+            }
+          >
+            Answer Form
           </Link>
         </div>
       </Drawer>

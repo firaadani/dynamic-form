@@ -41,22 +41,15 @@ const FormPage = () => {
   }, []);
 
   return (
-    <div className="w-full min-h-screen p-10 flex gap-4 flex-wrap">
-      <div
-        className="border-2 border-dashed border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer"
-        onClick={() => router.push(`/form/new-form`)}
-      >
-        <PlusOutlined />
-        <p>New Form</p>
-      </div>
+    <div className="w-full  p-10 flex gap-4 flex-wrap">
       {_.isEmpty(formData?.data)
         ? null
         : formData?.data?.map((item, index) => {
             return (
               <div
                 key={index}
-                className="border-2 border-dashed border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer"
-                onClick={() => router.push(`/form/edit-form/${item?.id}`)}
+                className="border-2 border-dashed border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer text-center text-sm px-2"
+                onClick={() => router.push(`/answer-form/${item?.id}`)}
               >
                 <p>{item?.title}</p>
               </div>

@@ -8,8 +8,8 @@ import { usePathname } from "next/navigation";
 import { titleCase } from "@/lib/helpers";
 
 function AuthButton() {
-  const { data: session } = useSession();
-  // console.log("session :", { session });
+  const { data: session, status } = useSession();
+  console.log("session :", { session, status });
   const pathname = usePathname();
 
   return (
