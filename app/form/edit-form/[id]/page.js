@@ -22,8 +22,12 @@ const EditForm = ({ params }) => {
   const [form] = Form.useForm();
 
   // ==================== useWatch ====================
+  const formDescValues = Form.useWatch("formDescription", form);
   const sectionValues = Form.useWatch("sections", form);
-  console.log("sectionValues :", { sectionValues });
+  console.log("sectionValues :", {
+    sectionValues,
+    check: sectionValues?.[0]?.questions?.[0]?.description,
+  });
 
   const { data: session } = useSession();
   const { id } = params;
@@ -46,16 +50,22 @@ const EditForm = ({ params }) => {
       if (res?.status === 200) {
         setDataForm(res?.data?.data);
         form.setFieldValue("formTitle", res?.data?.data?.title);
+        form.setFieldValue("formDescription", res?.data?.data?.description);
       }
     } catch (error) {
       console.log("error :", { error });
     }
   };
 
-  const postForm = async () => {
+  const postForm = async ({ name, data }) => {
     try {
       let values = form.getFieldsValue();
-      let params = { ...dataForm, title: values?.formTitle, _method: "PATCH" };
+      let params = {
+        ...dataForm,
+        title: values?.formTitle,
+        description: data ?? values?.formDescription,
+        _method: "PATCH",
+      };
       let res = await axios.post(
         `${url}api/dashboard/forms/${dataForm?.id}`,
         params,
@@ -72,14 +82,16 @@ const EditForm = ({ params }) => {
     }
   };
 
-  const postSection = async (name) => {
+  const postSection = async ({ name, data }) => {
     const index = name?.split("-")?.[1];
     const newItem = _.isEmpty(dataForm?.sections?.[index]) ? true : false;
+    console.log("newItem :", { newItem: dataForm?.sections });
     try {
       let values = form.getFieldsValue();
       let params = {
         ...dataForm?.sections?.[index],
         title: values?.sections?.[index]?.sectionName,
+        description: data ?? values?.sections?.[index]?.sectionDescription,
         form_id: dataForm?.id,
         _method: newItem ? null : "PATCH",
       };
@@ -99,7 +111,7 @@ const EditForm = ({ params }) => {
     }
   };
 
-  const postQuestion = async (name) => {
+  const postQuestion = async ({ name, data }) => {
     console.log("postQuestion called", { name });
     const sectionIndex = name?.split("-")?.[1];
     const questionIndex = name?.split("-")?.[2];
@@ -111,13 +123,13 @@ const EditForm = ({ params }) => {
     try {
       let values = form.getFieldsValue();
       console.log("values :", {
+        data,
         values,
         newItem,
         sectionIndex,
         questionIndex,
         check:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-            ?.question,
+          values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.options,
       });
       let params = {
         ...dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex],
@@ -125,11 +137,13 @@ const EditForm = ({ params }) => {
           values?.sections?.[sectionIndex]?.questions?.[questionIndex]
             ?.question,
         description:
+          data ??
           values?.sections?.[sectionIndex]?.questions?.[questionIndex]
             ?.description,
-        type: values?.sections?.[sectionIndex]?.question?.[questionIndex]?.type,
+        type: values?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.type,
         option:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.option,
+          values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.options,
         answer_key:
           values?.sections?.[sectionIndex]?.questions?.[questionIndex]
             ?.answer_key,
@@ -158,22 +172,29 @@ const EditForm = ({ params }) => {
     }
   };
 
-  const handleBlur = ({ e, name }) => {
+  const handleBlur = ({ e, name, wsiwygdata }) => {
     // console.log("check:e.target.name :", { check: e.target.name });
-    if (e?.target?.name === "formTitle" || name === "formTitle") {
-      postForm();
+    if (
+      e?.target?.name === "formTitle" ||
+      name === "formTitle" ||
+      e?.target?.name === "formDescription" ||
+      name === "formDescription"
+    ) {
+      postForm({ name, data: wsiwygdata });
     }
     if (
       e?.target?.name?.includes("sectionName") ||
-      name?.includes("sectionName")
+      name?.includes("sectionName") ||
+      e?.target?.name?.includes("sectionDescription") ||
+      name?.includes("sectionDescription")
     ) {
-      postSection(e?.target?.name);
+      postSection({ name: name, data: wsiwygdata });
     }
     if (e?.target?.name?.includes("question")) {
-      postQuestion(e?.target?.name);
+      postQuestion({ name: e?.target?.name });
     }
     if (name?.includes("question")) {
-      postQuestion(name);
+      postQuestion({ name, data: wsiwygdata });
     }
   };
 
@@ -193,14 +214,65 @@ const EditForm = ({ params }) => {
             name: ["sections", index, "sectionName"],
             value: item?.title,
           },
+          {
+            name: ["sections", index, "sectionDescription"],
+            value: item?.description,
+          },
         ]);
         item?.questions?.forEach((q, qIndex) => {
+          // console.log("q :", { q });
           form.setFields([
             {
               name: ["sections", index, "questions", qIndex, "question"],
               value: q?.question,
             },
+            {
+              name: ["sections", index, "questions", qIndex, "description"],
+              value: q?.description,
+            },
+            {
+              name: ["sections", index, "questions", qIndex, "type"],
+              value: q?.type,
+            },
           ]);
+          if (!_.isEmpty(q?.option)) {
+            JSON.parse(q?.option)?.forEach((o, oIndex) => {
+              // console.log("o :", { o });
+              form.setFields([
+                {
+                  name: [
+                    "sections",
+                    index,
+                    "questions",
+                    qIndex,
+                    "options",
+                    oIndex,
+                    "option",
+                  ],
+                  value: o?.option,
+                },
+              ]);
+            });
+          }
+          if (!_.isEmpty(q?.answer_key)) {
+            JSON.parse(q?.answer_key)?.forEach((o, oIndex) => {
+              console.log("o :", { o });
+              form.setFields([
+                {
+                  name: [
+                    "sections",
+                    index,
+                    "questions",
+                    qIndex,
+                    "answer_keys",
+                    oIndex,
+                    "answer_key",
+                  ],
+                  value: o?.answer_key,
+                },
+              ]);
+            });
+          }
         });
       });
     }
@@ -261,12 +333,24 @@ const EditForm = ({ params }) => {
                   <CKEditor
                     name={`questionDescription-${sectionField.name}-${field.name}`}
                     onBlur={handleBlur}
+                    initVal={
+                      sectionValues?.[sectionField.name]?.questions?.[
+                        field.name
+                      ]?.description
+                    }
                   />
                 </Form.Item>
                 {/* ) : null} */}
 
                 <Form.Item label="Type" name={[field.name, "type"]}>
                   <Select
+                    name={`questionType-${sectionField.name}-${field.name}`}
+                    onBlur={(e) =>
+                      handleBlur({
+                        e: e,
+                        name: `questionType-${sectionField.name}-${field.name}`,
+                      })
+                    }
                     options={[
                       {
                         label: "Short Answer",
@@ -319,6 +403,8 @@ const EditForm = ({ params }) => {
                                 name={[subField.name, "option"]}
                               >
                                 <Input
+                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  onBlur={(e) => handleBlur({ e: e })}
                                   placeholder={`Input option #${
                                     subField.key + 1
                                   } `}
@@ -343,6 +429,60 @@ const EditForm = ({ params }) => {
                     </Form.List>
                   </Form.Item>
                 ) : null}
+
+                <Form.Item label="Answer Key">
+                  <Form.List name={[field.name, "answer_keys"]}>
+                    {(subFields, subOpt) => (
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          rowGap: 16,
+                        }}
+                      >
+                        {subFields.map((subField) => (
+                          <div key={subField.key} className="w-full flex gap-4">
+                            <Form.Item
+                              noStyle
+                              name={[subField.name, "answer_key"]}
+                              help={`Jika ada lebih dari 1 jawaban, tambahkan menggunakan tombol "Tambah Answer Key". Pastikan huruf kecil/kapital sesuai dengan opsi`}
+                            >
+                              <Input
+                                name={`questionAnswer_keys-${sectionField.name}-${field.name}-${subField.name}`}
+                                onBlur={(e) => handleBlur({ e: e })}
+                                placeholder={`Input answer key #${
+                                  subField.key + 1
+                                } `}
+                              />
+                            </Form.Item>
+                            <CloseOutlined
+                              onClick={() => {
+                                subOpt.remove(subField.name);
+                              }}
+                            />
+                          </div>
+                        ))}
+                        <Button
+                          type="dashed"
+                          onClick={() => subOpt.add()}
+                          block
+                        >
+                          + Add Answer Key
+                        </Button>
+                      </div>
+                    )}
+                  </Form.List>
+                </Form.Item>
+                {/* <Form.Item
+                  label="Answer Key"
+                  name={[field.name, "answer_key"]}
+                  help="Jika ada lebih dari 1 jawaban, maka pisahkan dengan koma. Pastikan huruf kecil/kapital sesuai dengan opsi"
+                >
+                  <Input
+                    name={`questionKey-${sectionField.name}-${field.name}`}
+                    onBlur={(e) => handleBlur({ e: e })}
+                  />
+                </Form.Item> */}
               </Card>
             ))}
 
@@ -368,13 +508,10 @@ const EditForm = ({ params }) => {
       </p>
       <div className="overflow-y-auto">
         <Form
-          className="w-full mx-auto"
+          className="w-full mx-auto px-10"
           layout="vertical"
           form={form}
           name="dynamic_form_complex"
-          style={{
-            maxWidth: 600,
-          }}
           autoComplete="off"
           initialValues={{
             items: [{}],
@@ -382,6 +519,13 @@ const EditForm = ({ params }) => {
         >
           <Form.Item label="Form Title" name={"formTitle"}>
             <Input name={"formTitle"} onBlur={(e) => handleBlur({ e: e })} />
+          </Form.Item>
+          <Form.Item label="Form Description" name={"formDescription"}>
+            <CKEditor
+              name={`formDescription`}
+              onBlur={handleBlur}
+              initVal={formDescValues}
+            />
           </Form.Item>
           <Form.List name="sections">
             {(sectionFields, { add: addSection, remove: removeSection }) => (
@@ -414,6 +558,18 @@ const EditForm = ({ params }) => {
                       <Input
                         name={`sectionName-${field.name}`}
                         onBlur={(e) => handleBlur({ e: e })}
+                      />
+                    </Form.Item>
+                    <Form.Item
+                      label="Section Description"
+                      name={"sectionDescription"}
+                    >
+                      <CKEditor
+                        name={`sectionDescription-${field.name}`}
+                        onBlur={handleBlur}
+                        initVal={
+                          sectionValues?.[field.name]?.sectionDescription
+                        }
                       />
                     </Form.Item>
                     {questionComponent({ sectionField: field })}
