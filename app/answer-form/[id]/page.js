@@ -74,7 +74,9 @@ const AnswerFormPage = ({ params }) => {
                   name={`question-${item?.id}-${q?.id}`}
                   key={q?.id}
                   className={current === index ? `` : `hidden`}
-                ></Form.Item>
+                >
+                  {q?.type === "Simple"}
+                </Form.Item>
               );
             });
           })}

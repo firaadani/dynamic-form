@@ -129,7 +129,8 @@ const EditForm = ({ params }) => {
         sectionIndex,
         questionIndex,
         check:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.options,
+          values?.sections?.[sectionIndex]?.questions?.[questionIndex]
+            ?.answer_key,
       });
       let params = {
         ...dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex],
@@ -146,7 +147,7 @@ const EditForm = ({ params }) => {
           values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.options,
         answer_key:
           values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-            ?.answer_key,
+            ?.answer_keys,
         score:
           values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.score,
         parent_id:
