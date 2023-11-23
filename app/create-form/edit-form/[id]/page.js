@@ -40,7 +40,7 @@ const EditForm = ({ params }) => {
   const getFormById = async () => {
     try {
       let res = await axios.get(
-        `${url}api/dashboard/forms/${id}?include=sections,sections.questions`,
+        `${url}api/dashboard/forms/${id}?include=sections.questions.subQuestion.subQuestion.subQuestion.subQuestion,sections.questions.answers,sectionsCount`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -83,9 +83,10 @@ const EditForm = ({ params }) => {
   };
 
   const postSection = async ({ name, data }) => {
+    console.log("name :", { name });
     const index = name?.split("-")?.[1];
     const newItem = _.isEmpty(dataForm?.sections?.[index]) ? true : false;
-    console.log("newItem :", { newItem: dataForm?.sections });
+    // console.log("newItem :", { newItem: dataForm?.sections });
     try {
       let values = form.getFieldsValue();
       let params = {
@@ -112,54 +113,177 @@ const EditForm = ({ params }) => {
   };
 
   const postQuestion = async ({ name, data }) => {
-    console.log("postQuestion called", { name });
     const sectionIndex = name?.split("-")?.[1];
     const questionIndex = name?.split("-")?.[2];
-    const newItem = _.isEmpty(
+    const subquestionIndex = name?.split("-")?.[3];
+    const subSubquestionIndex = name?.split("-")?.[4];
+    const subSubSubquestionIndex = name?.split("-")?.[5];
+    console.log("postQuestion called", {
+      name,
+      split: name?.split("-"),
+      sectionIndex,
+      questionIndex,
+      subquestionIndex,
+      subSubquestionIndex,
+      subSubSubquestionIndex,
+      dataForm,
+      data,
+    });
+    const newQuestion = _.isEmpty(
       dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
     )
       ? true
       : false;
+    const newSubquestion =
+      subquestionIndex &&
+      _.isEmpty(
+        dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]
+      )
+        ? true
+        : false;
+    const newSubSubquestion =
+      subSubquestionIndex &&
+      _.isEmpty(
+        dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]?.sub_question?.[
+          subSubquestionIndex
+        ]
+      )
+        ? true
+        : false;
+    const newSubSubSubquestion =
+      subSubSubquestionIndex &&
+      _.isEmpty(
+        dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]?.sub_question?.[
+          subSubquestionIndex
+        ]?.sub_question?.[subSubSubquestionIndex]
+      )
+        ? true
+        : false;
+    const newItem = subSubSubquestionIndex
+      ? newSubSubSubquestion
+      : subSubquestionIndex
+      ? newSubSubquestion
+      : subquestionIndex
+      ? newSubquestion
+      : newQuestion;
     try {
       let values = form.getFieldsValue();
-      console.log("values :", {
-        data,
-        values,
-        newItem,
-        sectionIndex,
-        questionIndex,
-        check:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-            ?.answer_key,
-      });
+      let questionValues =
+        values?.sections?.[sectionIndex]?.questions?.[questionIndex];
+      let subQuestionValues =
+        values?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.questions?.[subquestionIndex];
+      let subSubQuestionValues =
+        values?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.questions?.[subquestionIndex]?.questions?.[subSubquestionIndex];
+      let subSubSubQuestionValues =
+        values?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.questions?.[subquestionIndex]?.questions?.[subSubquestionIndex]
+          ?.questions?.[subSubSubquestionIndex];
+
+      let dataFormQuestion =
+        dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex];
+      let dataFormSubQuestion =
+        dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex];
+      let dataFormSubSubQuestion =
+        dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]?.sub_question?.[
+          subSubquestionIndex
+        ];
+      let dataFormSubSubSubQuestion =
+        dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]?.sub_question?.[
+          subSubquestionIndex
+        ]?.sub_question?.[subSubSubquestionIndex];
+      let oldData = subSubSubquestionIndex
+        ? dataFormSubSubQuestion
+        : subSubquestionIndex
+        ? dataFormSubSubQuestion
+        : subquestionIndex
+        ? dataFormSubQuestion
+        : dataFormQuestion;
       let params = {
-        ...dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex],
-        question:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-            ?.question,
-        description:
-          data ??
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-            ?.description,
-        type: values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-          ?.type,
-        option:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.options,
-        answer_key:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-            ?.answer_keys,
-        score:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]?.score,
-        parent_id:
-          values?.sections?.[sectionIndex]?.questions?.[questionIndex]
-            ?.parent_id,
+        ...oldData,
+        question: subSubSubquestionIndex
+          ? subSubSubQuestionValues?.question
+          : subSubquestionIndex
+          ? subSubQuestionValues?.question
+          : subquestionIndex
+          ? subQuestionValues?.question
+          : questionValues?.question,
+        description: data
+          ? data
+          : subSubSubquestionIndex
+          ? subSubSubQuestionValues?.description
+          : subSubquestionIndex
+          ? subSubQuestionValues?.description
+          : subquestionIndex
+          ? subQuestionValues?.description
+          : questionValues?.description,
+        type: subSubSubquestionIndex
+          ? subSubSubQuestionValues?.type
+          : subSubquestionIndex
+          ? subSubQuestionValues?.type
+          : subquestionIndex
+          ? subQuestionValues?.type
+          : questionValues?.type,
+        option: subSubSubquestionIndex
+          ? subSubSubQuestionValues?.options
+          : subSubquestionIndex
+          ? subSubQuestionValues?.options
+          : subquestionIndex
+          ? subQuestionValues?.options
+          : questionValues?.options,
+        answer_key: subSubSubquestionIndex
+          ? subSubSubQuestionValues?.answer_keys
+          : subSubquestionIndex
+          ? subSubQuestionValues?.answer_keys
+          : subquestionIndex
+          ? subQuestionValues?.answer_keys
+          : questionValues?.answer_keys,
+        score: subSubSubquestionIndex
+          ? subSubSubQuestionValues?.score
+          : subSubquestionIndex
+          ? subSubQuestionValues?.score
+          : subquestionIndex
+          ? subQuestionValues?.score
+          : questionValues?.score,
+        parent_id: subSubSubquestionIndex
+          ? dataFormSubSubQuestion?.id
+          : subSubquestionIndex
+          ? dataFormSubQuestion?.id
+          : subquestionIndex
+          ? dataFormQuestion?.id
+          : null,
+        // subSubSubquestionIndex
+        //   ? dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+        //       ?.questions?.[subquestionIndex]?.questions?.[subSubquestionIndex]
+        //       ?.id
+        //   : subSubquestionIndex
+        //   ? dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+        //       ?.questions?.[subquestionIndex]?.id
+        //   : subquestionIndex
+        //   ? dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]?.id
+        //   : null,
         section_id: dataForm?.sections?.[sectionIndex]?.id,
         form_id: dataForm?.id,
         _method: newItem ? null : "PATCH",
       };
       let postURL = newItem
         ? `${url}api/dashboard/questions/`
-        : `${url}api/dashboard/questions/${dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]?.id}`;
+        : `${url}api/dashboard/questions/${
+            subSubSubquestionIndex
+              ? dataFormSubSubSubQuestion?.id
+              : subSubquestionIndex
+              ? dataFormSubSubQuestion?.id
+              : subquestionIndex
+              ? dataFormSubQuestion?.id
+              : dataFormQuestion?.id
+          }`;
       let res = await axios.post(postURL, params, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
@@ -189,7 +313,7 @@ const EditForm = ({ params }) => {
       e?.target?.name?.includes("sectionDescription") ||
       name?.includes("sectionDescription")
     ) {
-      postSection({ name: name, data: wsiwygdata });
+      postSection({ name: e?.target?.name ?? name, data: wsiwygdata });
     }
     if (e?.target?.name?.includes("question")) {
       postQuestion({ name: e?.target?.name });
@@ -274,13 +398,225 @@ const EditForm = ({ params }) => {
               ]);
             });
           }
+          if (!_.isEmpty(q?.sub_question)) {
+            q?.sub_question?.forEach((qq, qqIndex) => {
+              console.log("qq :", { qq });
+              form.setFields([
+                {
+                  name: [
+                    "sections",
+                    index,
+                    "questions",
+                    qIndex,
+                    "questions",
+                    qqIndex,
+                    "question",
+                  ],
+                  value: qq?.question,
+                },
+
+                {
+                  name: [
+                    "sections",
+                    index,
+                    "questions",
+                    qIndex,
+                    "questions",
+                    qqIndex,
+                    "description",
+                  ],
+                  value: qq?.description,
+                },
+                {
+                  name: [
+                    "sections",
+                    index,
+                    "questions",
+                    qIndex,
+                    "questions",
+                    qqIndex,
+                    "type",
+                  ],
+                  value: qq?.type,
+                },
+              ]);
+              if (!_.isEmpty(qq?.sub_question)) {
+                qq?.sub_question?.forEach((qqq, qqqIndex) => {
+                  form.setFields([
+                    {
+                      name: [
+                        "sections",
+                        index,
+                        "questions",
+                        qIndex,
+                        "questions",
+                        qqIndex,
+                        "questions",
+                        qqqIndex,
+                        "question",
+                      ],
+                      value: qqq?.question,
+                    },
+
+                    {
+                      name: [
+                        "sections",
+                        index,
+                        "questions",
+                        qIndex,
+                        "questions",
+                        qqIndex,
+                        "questions",
+                        qqqIndex,
+                        "description",
+                      ],
+                      value: qqq?.description,
+                    },
+                    {
+                      name: [
+                        "sections",
+                        index,
+                        "questions",
+                        qIndex,
+                        "questions",
+                        qqIndex,
+                        "questions",
+                        qqqIndex,
+                        "type",
+                      ],
+                      value: qqq?.type,
+                    },
+                  ]);
+                  if (!_.isEmpty(qqq?.sub_question)) {
+                    qqq?.sub_question?.forEach((qqqq, qqqqIndex) => {
+                      form.setFields([
+                        {
+                          name: [
+                            "sections",
+                            index,
+                            "questions",
+                            qIndex,
+                            "questions",
+                            qqIndex,
+                            "questions",
+                            qqqIndex,
+                            "questions",
+                            qqqqIndex,
+                            "question",
+                          ],
+                          value: qqqq?.question,
+                        },
+
+                        {
+                          name: [
+                            "sections",
+                            index,
+                            "questions",
+                            qIndex,
+                            "questions",
+                            qqIndex,
+                            "questions",
+                            qqqIndex,
+                            "questions",
+                            qqqqIndex,
+                            "description",
+                          ],
+                          value: qqqq?.description,
+                        },
+                        {
+                          name: [
+                            "sections",
+                            index,
+                            "questions",
+                            qIndex,
+                            "questions",
+                            qqIndex,
+                            "questions",
+                            qqqIndex,
+                            "questions",
+                            qqqqIndex,
+                            "type",
+                          ],
+                          value: qqqq?.type,
+                        },
+                      ]);
+                      if (!_.isEmpty(qqq?.sub_question)) {
+                        qqqq?.sub_question?.forEach((qqqqq, qqqqqIndex) => {
+                          form.setFields([
+                            {
+                              name: [
+                                "sections",
+                                index,
+                                "questions",
+                                qIndex,
+                                "questions",
+                                qqIndex,
+                                "questions",
+                                qqqIndex,
+                                "questions",
+                                qqqqIndex,
+                                "questions",
+                                qqqqqIndex,
+                                "question",
+                              ],
+                              value: qqqqq?.question,
+                            },
+
+                            {
+                              name: [
+                                "sections",
+                                index,
+                                "questions",
+                                qIndex,
+                                "questions",
+                                qqIndex,
+                                "questions",
+                                qqqIndex,
+                                "questions",
+                                qqqqIndex,
+                                "questions",
+                                qqqqqIndex,
+                                "description",
+                              ],
+                              value: qqqqq?.description,
+                            },
+                            {
+                              name: [
+                                "sections",
+                                index,
+                                "questions",
+                                qIndex,
+                                "questions",
+                                qqIndex,
+                                "questions",
+                                qqqIndex,
+                                "questions",
+                                qqqqIndex,
+                                "questions",
+                                qqqqqIndex,
+                                "type",
+                              ],
+                              value: qqqqq?.type,
+                            },
+                          ]);
+                        });
+                      }
+                    });
+                  }
+                });
+              }
+            });
+          }
         });
       });
     }
     return () => {};
   }, [dataForm]);
 
-  const questionComponent = ({ sectionField }) => {
+  const questionComponent = ({ sectionField, parent_id }) => {
+    const splitted =
+      parent_id.toString()?.indexOf("-") === -1 ? null : parent_id?.split("-");
+
     return (
       <Form.List name={[sectionField.name, "questions"]}>
         {(fields, { add, remove }) => (
@@ -321,7 +657,7 @@ const EditForm = ({ params }) => {
                   ?.qType === "Simple Question" ? ( */}
                 <Form.Item label="Question" name={[field.name, "question"]}>
                   <Input
-                    name={`questionQuestion-${sectionField.name}-${field.name}`}
+                    name={`questionQuestion-${parent_id}-${field.name}`}
                     onBlur={(e) => handleBlur({ e: e })}
                   />
                 </Form.Item>
@@ -332,12 +668,24 @@ const EditForm = ({ params }) => {
                   name={[field.name, "description"]}
                 >
                   <CKEditor
-                    name={`questionDescription-${sectionField.name}-${field.name}`}
+                    name={`questionDescription-${parent_id}-${field.name}`}
                     onBlur={handleBlur}
                     initVal={
-                      sectionValues?.[sectionField.name]?.questions?.[
-                        field.name
-                      ]?.description
+                      splitted?.length === 4
+                        ? sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                            ?.questions?.[splitted[2]]?.questions?.[splitted[3]]
+                            ?.questions?.[field.name]?.description ?? ""
+                        : splitted?.length === 3
+                        ? sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                            ?.questions?.[splitted[2]]?.questions?.[field.name]
+                            ?.description ?? ""
+                        : splitted?.length === 2
+                        ? sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                            ?.questions?.[field.name]?.description ?? ""
+                        : splitted?.length === 1
+                        ? sectionValues?.[splitted[0]]?.questions?.[field.name]
+                            ?.description ?? ""
+                        : ""
                     }
                   />
                 </Form.Item>
@@ -349,10 +697,15 @@ const EditForm = ({ params }) => {
                     onBlur={(e) =>
                       handleBlur({
                         e: e,
-                        name: `questionType-${sectionField.name}-${field.name}`,
+                        name: `questionType-${parent_id}-${field.name}`,
                       })
                     }
                     options={[
+                      {
+                        label: "Section",
+                        value: "Section",
+                        disabled: splitted?.length > 3,
+                      },
                       {
                         label: "Short Answer",
                         value: "Short Answer",
@@ -380,7 +733,60 @@ const EditForm = ({ params }) => {
                 </Form.Item>
 
                 {/* Nest Form.List */}
-                {["Multiple Choice", "Checkboxes"]?.includes(
+                {/* {["Multiple Choice", "Checkboxes"]?.includes(
+                  sectionValues?.[sectionField.name]?.questions?.[field.name]
+                    ?.type
+                ) ? (
+                  <Form.Item label="Options">
+                    <Form.List name={[field.name, "options"]}>
+                      {(subFields, subOpt) => (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: 16,
+                          }}
+                        >
+                          {subFields.map((subField) => (
+                            <div
+                              key={subField.key}
+                              className="w-full flex gap-4"
+                            >
+                              <Form.Item
+                                noStyle
+                                name={[subField.name, "option"]}
+                              >
+                                <Input
+                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  onBlur={(e) => handleBlur({ e: e })}
+                                  placeholder={`Input option #${
+                                    subField.key + 1
+                                  } `}
+                                />
+                              </Form.Item>
+                              <CloseOutlined
+                                onClick={() => {
+                                  subOpt.remove(subField.name);
+                                }}
+                              />
+                            </div>
+                          ))}
+                          <Button
+                            type="dashed"
+                            onClick={() => subOpt.add()}
+                            block
+                          >
+                            + Add Options
+                          </Button>
+                        </div>
+                      )}
+                    </Form.List>
+                  </Form.Item>
+                ) : null} */}
+
+                {/* SHOW ADD OPTIONS BUTTON IF TYPE: MULTIPLE CHOICE OR CHECKBOXES IS SELECTED */}
+                {splitted === null &&
+                ["Multiple Choice", "Checkboxes"]?.includes(
                   sectionValues?.[sectionField.name]?.questions?.[field.name]
                     ?.type
                 ) ? (
@@ -430,6 +836,196 @@ const EditForm = ({ params }) => {
                     </Form.List>
                   </Form.Item>
                 ) : null}
+                {splitted?.length === 2 &&
+                ["Multiple Choice", "Checkboxes"]?.includes(
+                  sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                    ?.questions?.[field.name]?.type
+                ) ? (
+                  <Form.Item label="Options">
+                    <Form.List name={[field.name, "options"]}>
+                      {(subFields, subOpt) => (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: 16,
+                          }}
+                        >
+                          {subFields.map((subField) => (
+                            <div
+                              key={subField.key}
+                              className="w-full flex gap-4"
+                            >
+                              <Form.Item
+                                noStyle
+                                name={[subField.name, "option"]}
+                              >
+                                <Input
+                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  onBlur={(e) => handleBlur({ e: e })}
+                                  placeholder={`Input option #${
+                                    subField.key + 1
+                                  } `}
+                                />
+                              </Form.Item>
+                              <CloseOutlined
+                                onClick={() => {
+                                  subOpt.remove(subField.name);
+                                }}
+                              />
+                            </div>
+                          ))}
+                          <Button
+                            type="dashed"
+                            onClick={() => subOpt.add()}
+                            block
+                          >
+                            + Add Options
+                          </Button>
+                        </div>
+                      )}
+                    </Form.List>
+                  </Form.Item>
+                ) : null}
+                {splitted?.length === 3 &&
+                ["Multiple Choice", "Checkboxes"]?.includes(
+                  sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                    ?.questions?.[splitted[2]]?.questions?.[field.name]?.type
+                ) ? (
+                  <Form.Item label="Options">
+                    <Form.List name={[field.name, "options"]}>
+                      {(subFields, subOpt) => (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: 16,
+                          }}
+                        >
+                          {subFields.map((subField) => (
+                            <div
+                              key={subField.key}
+                              className="w-full flex gap-4"
+                            >
+                              <Form.Item
+                                noStyle
+                                name={[subField.name, "option"]}
+                              >
+                                <Input
+                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  onBlur={(e) => handleBlur({ e: e })}
+                                  placeholder={`Input option #${
+                                    subField.key + 1
+                                  } `}
+                                />
+                              </Form.Item>
+                              <CloseOutlined
+                                onClick={() => {
+                                  subOpt.remove(subField.name);
+                                }}
+                              />
+                            </div>
+                          ))}
+                          <Button
+                            type="dashed"
+                            onClick={() => subOpt.add()}
+                            block
+                          >
+                            + Add Options
+                          </Button>
+                        </div>
+                      )}
+                    </Form.List>
+                  </Form.Item>
+                ) : null}
+                {splitted?.length === 4 &&
+                ["Multiple Choice", "Checkboxes"]?.includes(
+                  sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                    ?.questions?.[splitted[2]]?.questions?.[splitted[3]]
+                    ?.questions?.[field.name]?.type
+                ) ? (
+                  <Form.Item label="Options">
+                    <Form.List name={[field.name, "options"]}>
+                      {(subFields, subOpt) => (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "column",
+                            rowGap: 16,
+                          }}
+                        >
+                          {subFields.map((subField) => (
+                            <div
+                              key={subField.key}
+                              className="w-full flex gap-4"
+                            >
+                              <Form.Item
+                                noStyle
+                                name={[subField.name, "option"]}
+                              >
+                                <Input
+                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  onBlur={(e) => handleBlur({ e: e })}
+                                  placeholder={`Input option #${
+                                    subField.key + 1
+                                  } `}
+                                />
+                              </Form.Item>
+                              <CloseOutlined
+                                onClick={() => {
+                                  subOpt.remove(subField.name);
+                                }}
+                              />
+                            </div>
+                          ))}
+                          <Button
+                            type="dashed"
+                            onClick={() => subOpt.add()}
+                            block
+                          >
+                            + Add Options
+                          </Button>
+                        </div>
+                      )}
+                    </Form.List>
+                  </Form.Item>
+                ) : null}
+
+                {/* SHOW ADD QUESTION BUTTON IF TYPE: SECTION IS SELECTED */}
+                {splitted === null &&
+                sectionValues?.[sectionField.name]?.questions?.[field.name]
+                  ?.type === `Section`
+                  ? questionComponent({
+                      sectionField: field,
+                      parent_id: `${parent_id}-${field.name}`,
+                    })
+                  : null}
+                {splitted?.length === 2 &&
+                sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                  ?.questions?.[field.name]?.type === `Section`
+                  ? questionComponent({
+                      sectionField: field,
+                      parent_id: `${parent_id}-${field.name}`,
+                    })
+                  : null}
+                {splitted?.length === 3 &&
+                sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                  ?.questions?.[splitted[2]]?.questions?.[field.name]?.type ===
+                  `Section`
+                  ? questionComponent({
+                      sectionField: field,
+                      parent_id: `${parent_id}-${field.name}`,
+                    })
+                  : null}
+                {splitted?.length === 4 &&
+                sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                  ?.questions?.[splitted[2]]?.questions?.[splitted[3]]
+                  ?.questions?.[field.name]?.type === `Section`
+                  ? questionComponent({
+                      sectionField: field,
+                      parent_id: `${parent_id}-${field.name}`,
+                    })
+                  : null}
 
                 <Form.Item label="Answer Key">
                   <Form.List name={[field.name, "answer_keys"]}>
@@ -525,7 +1121,7 @@ const EditForm = ({ params }) => {
             <CKEditor
               name={`formDescription`}
               onBlur={handleBlur}
-              initVal={formDescValues}
+              initVal={formDescValues ?? ""}
             />
           </Form.Item>
           <Form.List name="sections">
@@ -569,11 +1165,14 @@ const EditForm = ({ params }) => {
                         name={`sectionDescription-${field.name}`}
                         onBlur={handleBlur}
                         initVal={
-                          sectionValues?.[field.name]?.sectionDescription
+                          sectionValues?.[field.name]?.sectionDescription ?? ""
                         }
                       />
                     </Form.Item>
-                    {questionComponent({ sectionField: field })}
+                    {questionComponent({
+                      sectionField: field,
+                      parent_id: field.name,
+                    })}
                   </Card>
                 ))}
                 <Button type="dashed" onClick={() => addSection()} block>
