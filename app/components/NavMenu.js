@@ -9,7 +9,7 @@ import { titleCase } from "@/lib/helpers";
 
 function AuthButton() {
   const { data: session, status } = useSession();
-  console.log("session :", { session, status });
+  // console.log("session :", { session, status });
   const pathname = usePathname();
 
   return (
