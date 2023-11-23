@@ -44,7 +44,7 @@ const FormPage = () => {
     <div className="w-full  p-10 flex gap-4 flex-wrap">
       <div
         className="border-2 border-dashed border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer"
-        onClick={() => router.push(`/form/new-form`)}
+        onClick={() => router.push(`/create-form/new-form`)}
       >
         <PlusOutlined />
         <p>New Form</p>
