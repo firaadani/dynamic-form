@@ -15,6 +15,7 @@ import {
 import TextArea from "antd/es/input/TextArea";
 import Dragger from "antd/es/upload/Dragger";
 import { InboxOutlined } from "@ant-design/icons";
+import _ from "lodash";
 
 const AnswerFormPage = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
@@ -51,10 +52,16 @@ const AnswerFormPage = ({ params }) => {
     },
   };
 
+  const [checkedOptions, setCheckedOptions] = useState([]);
+
+  const handleCheckboxChange = (checkedValues) => {
+    setCheckedOptions(checkedValues);
+  };
+
   const getFormById = async () => {
     try {
       let res = await axios.get(
-        `${url}api/dashboard/forms/${id}?include=sections.questions.subQuestion.subQuestion.subQuestion.subQuestion,sections.questions.answers,sectionsCount`,
+        `${url}api/dashboard/forms/${id}?include=sections.questions.answers,sections.questions.subQuestion.answers,sections.questions.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.subQuestion.answers`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -70,7 +77,34 @@ const AnswerFormPage = ({ params }) => {
     }
   };
 
-  console.log("dataForm :", { dataForm });
+  const postAnswer = async ({ answer, id }) => {
+    try {
+      let values = form.getFieldsValue();
+      let params = {
+        answer: answer,
+        question_id: id,
+      };
+      let res = await axios.post(`${url}api/dashboard/answers`, params, {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+      });
+      if (res?.status > 200 && res?.status < 400) {
+        getFormById();
+      }
+    } catch (error) {
+      console.log("err :", { error });
+    }
+  };
+
+  function isJsonString(str) {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  }
 
   const next = () => {
     setCurrent(current + 1);
@@ -89,6 +123,40 @@ const AnswerFormPage = ({ params }) => {
     return () => {};
   }, []);
 
+  useEffect(() => {
+    if (!_.isEmpty(dataForm)) {
+      console.log("dataForm :", { dataForm });
+      dataForm?.sections?.map((item, index) => {
+        item?.questions?.map((q, qIndex) => {
+          form.setFields([
+            {
+              name: `question-${item?.id}-${q?.id}`,
+              value: q?.answers?.[0]?.answer,
+            },
+          ]);
+          if (!_.isEmpty(q?.sub_question)) {
+            q?.sub_question?.map((qq) => {
+              const answer = qq?.answers?.[0]?.answer;
+              form.setFields([
+                {
+                  name: `question-${item?.id}-${q?.id}-${qq?.id}`,
+                  value:
+                    isJsonString(answer) && _.isArray(JSON.parse(answer))
+                      ? JSON.parse(answer)?.map((item) => item.option)
+                      : isJsonString(answer)
+                      ? JSON.parse(answer)?.option
+                      : answer,
+                },
+              ]);
+            });
+          }
+        });
+      });
+    }
+
+    return () => {};
+  }, [dataForm]);
+
   const renderQuestion = ({ parent_id, parent, self, index }) => {
     return (
       <Form.Item
@@ -103,7 +171,7 @@ const AnswerFormPage = ({ params }) => {
         {self?.type === "Section" ? (
           <>
             {self?.sub_question?.map((child) => {
-              console.log("child :", { parent, self, child });
+              // console.log("child :", { parent, self, child });
               return (
                 <>
                   {renderQuestion({
@@ -117,26 +185,57 @@ const AnswerFormPage = ({ params }) => {
             })}
           </>
         ) : null}
-        {self?.type === "Short Answer" ? <Input /> : null}
-        {self?.type === "Paragraph" ? <TextArea /> : null}
+        {self?.type === "Short Answer" ? (
+          <Input
+            onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
+          />
+        ) : null}
+        {self?.type === "Paragraph" ? (
+          <TextArea
+            onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
+          />
+        ) : null}
         {self?.type === "Multiple Choice" ? (
           <Radio.Group>
             {self?.option &&
               JSON.parse(self?.option)?.map((item) => {
-                return <Radio value={item?.option}>{item?.option}</Radio>;
+                return (
+                  <Radio
+                    onBlur={(e) => {
+                      let answer = { option: e?.target?.value };
+                      postAnswer({
+                        answer: JSON.stringify(answer),
+                        id: self.id,
+                      });
+                      console.log("blur :", { e: e?.target?.value });
+                    }}
+                    value={item?.option}
+                  >
+                    {item?.option}
+                  </Radio>
+                );
               })}
           </Radio.Group>
         ) : null}
         {self?.type === "Checkboxes" ? (
           <Checkbox.Group
             options={JSON?.parse(self?.option)?.map((item) => {
-              console.log("item :", { item });
-
               return {
                 label: item?.option,
                 value: item?.option,
               };
             })}
+            onChange={handleCheckboxChange}
+            onBlur={(e) => {
+              let answer = checkedOptions?.map((item) => ({ option: item }));
+              postAnswer({
+                answer: JSON.stringify(answer),
+                id: self.id,
+              });
+              console.log("blur :", {
+                e,
+              });
+            }}
           />
         ) : null}
         {self?.type === "File Upload" ? (
