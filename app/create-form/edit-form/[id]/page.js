@@ -2,7 +2,16 @@
 
 import React, { useState, useEffect } from "react";
 import { CloseOutlined } from "@ant-design/icons";
-import { Button, Card, Form, Input, Select, Space, Typography } from "antd";
+import {
+  Button,
+  Card,
+  Form,
+  Input,
+  Select,
+  Space,
+  Typography,
+  message,
+} from "antd";
 
 import dynamic from "next/dynamic";
 import _, { isEmpty } from "lodash";
@@ -107,6 +116,27 @@ const EditForm = ({ params }) => {
       });
       getFormById();
       console.log("res :", { res });
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+
+  const deleteSection = async (index) => {
+    const sectionId = dataForm?.sections?.[index]?.id;
+    try {
+      let res = await axios.delete(
+        `${url}api/dashboard/sections/${sectionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            // Add any other headers as needed
+          },
+        }
+      );
+      console.log("res :", { res });
+      if (res?.status === 200) {
+        message.success("section deleted");
+      }
     } catch (error) {
       console.log("error :", { error });
     }
@@ -292,6 +322,58 @@ const EditForm = ({ params }) => {
       });
       getFormById();
       console.log("res :", { res });
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+
+  const deleteQuestion = async (index) => {
+    const sectionIndex = index?.split("-")?.[0];
+    const questionIndex = index?.split("-")?.[1];
+    const subquestionIndex = index?.split("-")?.[2];
+    const subSubquestionIndex = index?.split("-")?.[3];
+    const subSubSubquestionIndex = index?.split("-")?.[4];
+
+    console.log(
+      "sectionIndex,questionIndex,subquestionIndex, subSubquestionIndex, subSubSubquestionIndex :",
+      {
+        sectionIndex,
+        questionIndex,
+        subquestionIndex,
+        subSubquestionIndex,
+        subSubSubquestionIndex,
+        dataForm: dataForm?.sections?.[sectionIndex],
+      }
+    );
+
+    const questionId = subSubSubquestionIndex
+      ? dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]?.sub_question?.[
+          subSubquestionIndex
+        ]?.sub_question?.[subSubSubquestionIndex]?.id
+      : subSubquestionIndex
+      ? dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]?.sub_question?.[
+          subSubquestionIndex
+        ]?.id
+      : subquestionIndex
+      ? dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
+          ?.sub_question?.[subquestionIndex]?.id
+      : dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]?.id;
+    try {
+      let res = await axios.delete(
+        `${url}api/dashboard/questions/${questionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+            // Add any other headers as needed
+          },
+        }
+      );
+      console.log("res :", { res });
+      if (res?.status === 200) {
+        message.success("question deleted");
+      }
     } catch (error) {
       console.log("error :", { error });
     }
@@ -638,6 +720,7 @@ const EditForm = ({ params }) => {
                   <CloseOutlined
                     onClick={() => {
                       remove(field.name);
+                      deleteQuestion(`${parent_id}-${field.name}`);
                     }}
                   />
                 }
@@ -1144,6 +1227,7 @@ const EditForm = ({ params }) => {
                       <CloseOutlined
                         onClick={() => {
                           removeSection(field.name);
+                          deleteSection(field.name);
                         }}
                       />
                     }
