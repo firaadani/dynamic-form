@@ -481,7 +481,7 @@ const EditForm = ({ params }) => {
                     qIndex,
                     "answer_keys",
                     oIndex,
-                    "answer_key",
+                    "option",
                   ],
                   value: o?.answer_key,
                 },
@@ -1132,11 +1132,11 @@ const EditForm = ({ params }) => {
                           <div key={subField.key} className="w-full flex gap-4">
                             <Form.Item
                               noStyle
-                              name={[subField.name, "answer_key"]}
+                              name={[subField.name, "option"]}
                               help={`Jika ada lebih dari 1 jawaban, tambahkan menggunakan tombol "Tambah Answer Key". Pastikan huruf kecil/kapital sesuai dengan opsi`}
                             >
                               <Input
-                                name={`questionAnswer_keys-${sectionField.name}-${field.name}-${subField.name}`}
+                                name={`questionAnswer_keys-${parent_id}-${field.name}`}
                                 onBlur={(e) => handleBlur({ e: e })}
                                 placeholder={`Input answer key #${
                                   subField.key + 1
