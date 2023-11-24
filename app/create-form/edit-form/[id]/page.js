@@ -14,7 +14,7 @@ import {
 } from "antd";
 
 import dynamic from "next/dynamic";
-import _, { isEmpty } from "lodash";
+import _ from "lodash";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
