@@ -483,7 +483,7 @@ const EditForm = ({ params }) => {
                     oIndex,
                     "option",
                   ],
-                  value: o?.answer_key,
+                  value: o?.option,
                 },
               ]);
             });
@@ -530,6 +530,48 @@ const EditForm = ({ params }) => {
                   value: qq?.type,
                 },
               ]);
+              if (!_.isEmpty(qq?.option)) {
+                JSON.parse(qq?.option)?.forEach((o, oIndex) => {
+                  // console.log("o :", { o });
+                  form.setFields([
+                    {
+                      name: [
+                        "sections",
+                        index,
+                        "questions",
+                        qIndex,
+                        "questions",
+                        qqIndex,
+                        "options",
+                        oIndex,
+                        "option",
+                      ],
+                      value: o?.option,
+                    },
+                  ]);
+                });
+              }
+              if (!_.isEmpty(qq?.answer_key)) {
+                JSON.parse(qq?.answer_key)?.forEach((o, oIndex) => {
+                  console.log("o :", { o });
+                  form.setFields([
+                    {
+                      name: [
+                        "sections",
+                        index,
+                        "questions",
+                        qIndex,
+                        "questions",
+                        qqIndex,
+                        "answer_keys",
+                        oIndex,
+                        "option",
+                      ],
+                      value: o?.option,
+                    },
+                  ]);
+                });
+              }
               if (!_.isEmpty(qq?.sub_question)) {
                 qq?.sub_question?.forEach((qqq, qqqIndex) => {
                   form.setFields([
@@ -630,8 +672,54 @@ const EditForm = ({ params }) => {
                           value: qqqq?.type,
                         },
                       ]);
+                      if (!_.isEmpty(qqq?.option)) {
+                        JSON.parse(qqq?.option)?.forEach((o, oIndex) => {
+                          // console.log("o :", { o });
+                          form.setFields([
+                            {
+                              name: [
+                                "sections",
+                                index,
+                                "questions",
+                                qIndex,
+                                "questions",
+                                qqIndex,
+                                "questions",
+                                qqqIndex,
+                                "options",
+                                oIndex,
+                                "option",
+                              ],
+                              value: o?.option,
+                            },
+                          ]);
+                        });
+                      }
+                      if (!_.isEmpty(qqq?.answer_key)) {
+                        JSON.parse(qqq?.answer_key)?.forEach((o, oIndex) => {
+                          console.log("o :", { o });
+                          form.setFields([
+                            {
+                              name: [
+                                "sections",
+                                index,
+                                "questions",
+                                qIndex,
+                                "questions",
+                                qqIndex,
+                                "questions",
+                                qqqIndex,
+                                "answer_keys",
+                                oIndex,
+                                "option",
+                              ],
+                              value: o?.option,
+                            },
+                          ]);
+                        });
+                      }
                       if (!_.isEmpty(qqq?.sub_question)) {
-                        qqqq?.sub_question?.forEach((qqqqq, qqqqqIndex) => {
+                        qqq?.sub_question?.forEach((qqqq, qqqqIndex) => {
                           form.setFields([
                             {
                               name: [
@@ -645,13 +733,10 @@ const EditForm = ({ params }) => {
                                 qqqIndex,
                                 "questions",
                                 qqqqIndex,
-                                "questions",
-                                qqqqqIndex,
                                 "question",
                               ],
-                              value: qqqqq?.question,
+                              value: qqqq?.question,
                             },
-
                             {
                               name: [
                                 "sections",
@@ -664,11 +749,9 @@ const EditForm = ({ params }) => {
                                 qqqIndex,
                                 "questions",
                                 qqqqIndex,
-                                "questions",
-                                qqqqqIndex,
                                 "description",
                               ],
-                              value: qqqqq?.description,
+                              value: qqqq?.description,
                             },
                             {
                               name: [
@@ -682,13 +765,63 @@ const EditForm = ({ params }) => {
                                 qqqIndex,
                                 "questions",
                                 qqqqIndex,
-                                "questions",
-                                qqqqqIndex,
                                 "type",
                               ],
-                              value: qqqqq?.type,
+                              value: qqqq?.type,
                             },
                           ]);
+                          if (!_.isEmpty(qqqq?.option)) {
+                            JSON.parse(qqqq?.option)?.forEach((o, oIndex) => {
+                              // console.log("o :", { o });
+                              form.setFields([
+                                {
+                                  name: [
+                                    "sections",
+                                    index,
+                                    "questions",
+                                    qIndex,
+                                    "questions",
+                                    qqIndex,
+                                    "questions",
+                                    qqqIndex,
+                                    "questions",
+                                    qqqqIndex,
+                                    "options",
+                                    oIndex,
+                                    "option",
+                                  ],
+                                  value: o?.option,
+                                },
+                              ]);
+                            });
+                          }
+                          if (!_.isEmpty(qqqq?.answer_key)) {
+                            JSON.parse(qqqq?.answer_key)?.forEach(
+                              (o, oIndex) => {
+                                console.log("o :", { o });
+                                form.setFields([
+                                  {
+                                    name: [
+                                      "sections",
+                                      index,
+                                      "questions",
+                                      qIndex,
+                                      "questions",
+                                      qqIndex,
+                                      "questions",
+                                      qqqIndex,
+                                      "questions",
+                                      qqqqIndex,
+                                      "answer_keys",
+                                      oIndex,
+                                      "option",
+                                    ],
+                                    value: o?.option,
+                                  },
+                                ]);
+                              }
+                            );
+                          }
                         });
                       }
                     });
