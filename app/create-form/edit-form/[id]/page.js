@@ -148,17 +148,7 @@ const EditForm = ({ params }) => {
     const subquestionIndex = name?.split("-")?.[3];
     const subSubquestionIndex = name?.split("-")?.[4];
     const subSubSubquestionIndex = name?.split("-")?.[5];
-    console.log("postQuestion called", {
-      name,
-      split: name?.split("-"),
-      sectionIndex,
-      questionIndex,
-      subquestionIndex,
-      subSubquestionIndex,
-      subSubSubquestionIndex,
-      dataForm,
-      data,
-    });
+
     const newQuestion = _.isEmpty(
       dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
     )
@@ -199,6 +189,24 @@ const EditForm = ({ params }) => {
       : subquestionIndex
       ? newSubquestion
       : newQuestion;
+
+    console.log("postQuestion called", {
+      name,
+      split: name?.split("-"),
+      sectionIndex,
+      questionIndex,
+      subquestionIndex,
+      subSubquestionIndex,
+      subSubSubquestionIndex,
+      dataForm,
+      data,
+      newQuestion,
+      newSubquestion,
+      newSubSubquestion,
+      newSubSubSubquestion,
+      newItem,
+    });
+
     try {
       let values = form.getFieldsValue();
       let questionValues =
@@ -380,7 +388,7 @@ const EditForm = ({ params }) => {
   };
 
   const handleBlur = ({ e, name, wsiwygdata }) => {
-    // console.log("check:e.target.name :", { check: e.target.name });
+    console.log("check:e.target.name :", { check: e.target.name });
     if (
       e?.target?.name === "formTitle" ||
       name === "formTitle" ||
@@ -893,7 +901,7 @@ const EditForm = ({ params }) => {
                                 name={[subField.name, "option"]}
                               >
                                 <Input
-                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  name={`questionOptions-${parent_id}-${field.name}`}
                                   onBlur={(e) => handleBlur({ e: e })}
                                   placeholder={`Input option #${
                                     subField.key + 1
@@ -944,7 +952,7 @@ const EditForm = ({ params }) => {
                                 name={[subField.name, "option"]}
                               >
                                 <Input
-                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  name={`questionOptions-${parent_id}-${field.name}`}
                                   onBlur={(e) => handleBlur({ e: e })}
                                   placeholder={`Input option #${
                                     subField.key + 1
@@ -1047,7 +1055,7 @@ const EditForm = ({ params }) => {
                                 name={[subField.name, "option"]}
                               >
                                 <Input
-                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                  name={`questionOptions-${parent_id}-${field.name}`}
                                   onBlur={(e) => handleBlur({ e: e })}
                                   placeholder={`Input option #${
                                     subField.key + 1
