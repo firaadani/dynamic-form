@@ -55,7 +55,7 @@ const FormPage = () => {
             return (
               <div
                 key={index}
-                className="border-2 border-dashed border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer text-center text-sm px-2"
+                className="border-2 border-solid border-indigo-500 bg-white border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer text-center text-sm px-2"
                 onClick={() =>
                   router.push(`/create-form/edit-form/${item?.id}`)
                 }

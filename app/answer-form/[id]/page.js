@@ -11,11 +11,13 @@ import {
   Radio,
   Steps,
   TimePicker,
+  message,
 } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import Dragger from "antd/es/upload/Dragger";
 import { InboxOutlined } from "@ant-design/icons";
 import _ from "lodash";
+import moment from "moment";
 
 const AnswerFormPage = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
@@ -30,8 +32,8 @@ const AnswerFormPage = ({ params }) => {
 
   const props = {
     name: "file",
-    multiple: true,
-    action: "https://run.mocky.io/v3/435e224c-44fb-4773-9faf-380c5e6a2188",
+    multiple: false,
+    showUploadList: false,
     onChange(info) {
       const { status } = info.file;
       if (status !== "uploading") {
@@ -46,10 +48,36 @@ const AnswerFormPage = ({ params }) => {
     onDrop(e) {
       console.log("Dropped files", e.dataTransfer.files);
     },
-    beforeUpload: (file) => {
-      setFileList([...fileList, file]);
-      return false;
-    },
+    // beforeUpload: (file) => {
+    //   setFileList([...fileList, file]);
+    //   return false;
+    // },
+  };
+
+  const customRequest = async ({ file, qId }) => {
+    console.log("file, onSuccess, onError :", {
+      file,
+      qId,
+    });
+    // You can customize the payload here
+    const formData = new FormData();
+    formData.append("answer", file?.file);
+    formData.append("question_id", qId);
+
+    // Replace the URL with your actual server endpoint
+    try {
+      let res = await axios.post(`${url}api/dashboard/answers`, formData, {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+      });
+      if (res?.status === 200 || res?.status === 201) {
+        message.success("Berhasil upload file");
+        getFormById();
+      }
+    } catch (error) {
+      message.error(`Gagal upload file ${error.message}`);
+    }
   };
 
   const [checkedOptions, setCheckedOptions] = useState([]);
@@ -57,6 +85,16 @@ const AnswerFormPage = ({ params }) => {
   const handleCheckboxChange = (checkedValues) => {
     setCheckedOptions(checkedValues);
   };
+
+  function isDateValid(dateString) {
+    const timestamp = Date.parse(dateString);
+    return !isNaN(timestamp) && isFinite(timestamp);
+  }
+
+  function isValidTime(timeString) {
+    const date = new Date("2000-01-01 " + timeString);
+    return !isNaN(date.getTime());
+  }
 
   const getFormById = async () => {
     try {
@@ -79,12 +117,11 @@ const AnswerFormPage = ({ params }) => {
 
   const postAnswer = async ({ answer, id }) => {
     try {
-      let values = form.getFieldsValue();
-      let params = {
-        answer: answer,
-        question_id: id,
-      };
-      let res = await axios.post(`${url}api/dashboard/answers`, params, {
+      let formData = new FormData();
+      formData.append("answer", answer);
+      formData.append("question_id", id);
+
+      let res = await axios.post(`${url}api/dashboard/answers`, formData, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },
@@ -128,26 +165,56 @@ const AnswerFormPage = ({ params }) => {
       console.log("dataForm :", { dataForm });
       dataForm?.sections?.map((item, index) => {
         item?.questions?.map((q, qIndex) => {
-          form.setFields([
-            {
-              name: `question-${item?.id}-${q?.id}`,
-              value: q?.answers?.[0]?.answer,
-            },
-          ]);
+          console.log("q :", { q });
+
+          if (
+            isDateValid(q?.answers?.[0]?.answer) ||
+            isValidTime(q?.answers?.[0]?.answer)
+          ) {
+            form.setFields([
+              {
+                name: `question-${item?.id}-${q?.id}`,
+                value: moment(q?.answers?.[0]?.answer),
+              },
+            ]);
+          } else {
+            form.setFields([
+              {
+                name: `question-${item?.id}-${q?.id}`,
+                value: q?.answers?.[0]?.answer,
+              },
+            ]);
+          }
           if (!_.isEmpty(q?.sub_question)) {
             q?.sub_question?.map((qq) => {
               const answer = qq?.answers?.[0]?.answer;
-              form.setFields([
-                {
-                  name: `question-${item?.id}-${q?.id}-${qq?.id}`,
-                  value:
-                    isJsonString(answer) && _.isArray(JSON.parse(answer))
-                      ? JSON.parse(answer)?.map((item) => item.option)
-                      : isJsonString(answer)
-                      ? JSON.parse(answer)?.option
-                      : answer,
-                },
-              ]);
+              if (isDateValid(answer)) {
+                form.setFields([
+                  {
+                    name: `question-${item?.id}-${q?.id}-${qq?.id}`,
+                    value: moment(answer),
+                  },
+                ]);
+              } else if (isValidTime(answer)) {
+                form.setFields([
+                  {
+                    name: `question-${item?.id}-${q?.id}-${qq?.id}`,
+                    value: moment(answer, "HH:mm:ss"),
+                  },
+                ]);
+              } else {
+                form.setFields([
+                  {
+                    name: `question-${item?.id}-${q?.id}-${qq?.id}`,
+                    value:
+                      isJsonString(answer) && _.isArray(JSON.parse(answer))
+                        ? JSON.parse(answer)?.map((item) => item.option)
+                        : isJsonString(answer)
+                        ? JSON.parse(answer)?.option
+                        : answer,
+                  },
+                ]);
+              }
             });
           }
         });
@@ -239,21 +306,43 @@ const AnswerFormPage = ({ params }) => {
           />
         ) : null}
         {self?.type === "File Upload" ? (
-          <Dragger {...props}>
-            <p className="ant-upload-drag-icon">
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">
-              Click or drag file to this area to upload
-            </p>
-            <p className="ant-upload-hint">
-              Support for a single or bulk upload. Strictly prohibited from
-              uploading company data or other banned files.
-            </p>
-          </Dragger>
+          <>
+            <Dragger
+              {...props}
+              customRequest={(file, onError, onSuccess) =>
+                customRequest({ file, onError, onSuccess, qId: self.id })
+              }
+            >
+              <p className="ant-upload-drag-icon">
+                <InboxOutlined />
+              </p>
+              <p className="ant-upload-text">
+                Click or drag file to this area to upload
+              </p>
+              <p className="ant-upload-hint">Single file upload only</p>
+            </Dragger>
+            {!_.isEmpty(self?.answers?.[0]?.answer) ? (
+              <a
+                href={
+                  url + self?.answers?.[0]?.answer?.replace("public", "storage")
+                }
+                target="__blank"
+              >
+                {self.question}'s answer
+              </a>
+            ) : null}
+          </>
         ) : null}
-        {self?.type === "Date" ? <DatePicker /> : null}
-        {self?.type === "Time" ? <TimePicker /> : null}
+        {self?.type === "Date" ? (
+          <DatePicker
+            onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
+          />
+        ) : null}
+        {self?.type === "Time" ? (
+          <TimePicker
+            onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
+          />
+        ) : null}
       </Form.Item>
     );
   };
