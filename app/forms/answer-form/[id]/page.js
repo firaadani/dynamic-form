@@ -8,6 +8,7 @@ import {
   DatePicker,
   Form,
   Input,
+  Modal,
   Radio,
   Steps,
   TimePicker,
@@ -18,17 +19,21 @@ import Dragger from "antd/es/upload/Dragger";
 import { InboxOutlined } from "@ant-design/icons";
 import _ from "lodash";
 import moment from "moment";
+import { showError, showSuccess } from "@/lib/helpersClient";
+import { useRouter } from "next/navigation";
 
 const AnswerFormPage = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
   const { data: session } = useSession();
   const { id } = params;
   const [form] = Form.useForm();
+  const router = useRouter();
 
   // ==================== STATES ====================
   const [dataForm, setDataForm] = useState({});
   const [current, setCurrent] = useState(0);
   const [steps, setSteps] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const props = {
     name: "file",
@@ -134,6 +139,40 @@ const AnswerFormPage = ({ params }) => {
     }
   };
 
+  const submitForm = async () => {
+    try {
+      let params = { form_id: id };
+      let res = await axios.post(`${url}api/dashboard/results`, params, {
+        headers: {
+          Authorization: `Bearer ${session?.accessToken}`,
+        },
+      });
+      console.log("res :", { res });
+      if (res?.status === 200 || res?.status === 201) {
+        showSuccess("Berhasil", "Berhasil submit form");
+        router.push(`/forms/answer-form`);
+      }
+    } catch (error) {
+      console.log("error :", { error });
+      showError("Gagal submit form", `${error.message}`);
+    }
+  };
+
+  const modalKonfirmasi = () => {
+    return (
+      <Modal
+        title="Basic Modal"
+        open={isModalOpen}
+        onOk={submitForm}
+        okType="default"
+        okButtonProps={{ className: "bg-indigo-500 text-white" }}
+        onCancel={() => setIsModalOpen(false)}
+      >
+        <p>Pastikan Anda telah selesai mengisi form sebelum submit</p>
+      </Modal>
+    );
+  };
+
   function isJsonString(str) {
     try {
       JSON.parse(str);
@@ -214,6 +253,71 @@ const AnswerFormPage = ({ params }) => {
                         : answer,
                   },
                 ]);
+              }
+              if (!_.isEmpty(qq?.sub_question)) {
+                qq?.sub_question?.map((qqq) => {
+                  const answer = qqq?.answers?.[0]?.answer;
+                  if (isDateValid(answer)) {
+                    form.setFields([
+                      {
+                        name: `question-${item?.id}-${q?.id}-${qq?.id}-${qqq?.id}`,
+                        value: moment(answer),
+                      },
+                    ]);
+                  } else if (isValidTime(answer)) {
+                    form.setFields([
+                      {
+                        name: `question-${item?.id}-${q?.id}-${qq?.id}-${qqq?.id}`,
+                        value: moment(answer, "HH:mm:ss"),
+                      },
+                    ]);
+                  } else {
+                    form.setFields([
+                      {
+                        name: `question-${item?.id}-${q?.id}-${qq?.id}-${qqq?.id}`,
+                        value:
+                          isJsonString(answer) && _.isArray(JSON.parse(answer))
+                            ? JSON.parse(answer)?.map((item) => item.option)
+                            : isJsonString(answer)
+                            ? JSON.parse(answer)?.option
+                            : answer,
+                      },
+                    ]);
+                  }
+                  if (!_.isEmpty(qqq?.sub_question)) {
+                    qqq?.sub_question?.map((qqqq) => {
+                      const answer = qqqq?.answers?.[0]?.answer;
+                      if (isDateValid(answer)) {
+                        form.setFields([
+                          {
+                            name: `question-${item?.id}-${q?.id}-${qq?.id}-${qqq?.id}-${qqqq?.id}`,
+                            value: moment(answer),
+                          },
+                        ]);
+                      } else if (isValidTime(answer)) {
+                        form.setFields([
+                          {
+                            name: `question-${item?.id}-${q?.id}-${qq?.id}-${qqq?.id}-${qqqq?.id}`,
+                            value: moment(answer, "HH:mm:ss"),
+                          },
+                        ]);
+                      } else {
+                        form.setFields([
+                          {
+                            name: `question-${item?.id}-${q?.id}-${qq?.id}-${qqq?.id}-${qqqq?.id}`,
+                            value:
+                              isJsonString(answer) &&
+                              _.isArray(JSON.parse(answer))
+                                ? JSON.parse(answer)?.map((item) => item.option)
+                                : isJsonString(answer)
+                                ? JSON.parse(answer)?.option
+                                : answer,
+                          },
+                        ]);
+                      }
+                    });
+                  }
+                });
               }
             });
           }
@@ -350,6 +454,7 @@ const AnswerFormPage = ({ params }) => {
   if (dataForm) {
     return (
       <div className="m-10 bg-white rounded-2xl drop-shadow-sm p-10">
+        {modalKonfirmasi()}
         <p>{dataForm?.title}</p>
         <p className="flex gap-2">
           Deskripsi:
@@ -375,9 +480,7 @@ const AnswerFormPage = ({ params }) => {
             <Button onClick={() => next()}>Next</Button>
           )}
           {current === steps.length - 1 && (
-            <Button onClick={() => message.success("Processing complete!")}>
-              Done
-            </Button>
+            <Button onClick={() => setIsModalOpen(true)}>Submit</Button>
           )}
           {current > 0 && (
             <Button

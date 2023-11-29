@@ -38,7 +38,7 @@ const App = () => {
           // Add any other headers as needed
         },
       });
-      router.push(`/create-form/edit-form/${res?.data?.data?.id}`);
+      router.push(`/forms/create-form/edit-form/${res?.data?.data?.id}`);
     } catch (error) {
       console.log("error :", { error });
     }

@@ -15,7 +15,7 @@ const FormPage = () => {
   const getForms = async () => {
     try {
       let res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/forms?row=all`,
+        `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/forms?include=sections.questions.subQuestion.subQuestion.subQuestion.subQuestion,sections.questions.answers,sections.questions.subQuestion.answers,results`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,
@@ -25,7 +25,7 @@ const FormPage = () => {
       );
       // console.log("res :", { res });
       if (res.status === 200 || res?.data?.meta?.status === true) {
-        setFormData(res?.data);
+        setFormData(res?.data?.data);
       }
     } catch (error) {
       console.log("error :", { error });
@@ -42,27 +42,22 @@ const FormPage = () => {
 
   return (
     <div className="w-full  p-10 flex gap-4 flex-wrap">
-      <div
-        className="border-2 border-dashed border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer"
-        onClick={() => router.push(`/create-form/new-form`)}
-      >
-        <PlusOutlined />
-        <p>New Form</p>
-      </div>
       {_.isEmpty(formData?.data)
         ? null
         : formData?.data?.map((item, index) => {
-            return (
-              <div
-                key={index}
-                className="border-2 border-solid border-indigo-500 bg-white border-slate-400 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer text-center text-sm px-2"
-                onClick={() =>
-                  router.push(`/create-form/edit-form/${item?.id}`)
-                }
-              >
-                <p>{item?.title}</p>
-              </div>
-            );
+            if (_.isEmpty(item?.results)) {
+              return (
+                <div
+                  key={index}
+                  className="border-2 border-solid bg-white border-indigo-500 h-48 w-32 flex flex-col gap-4 justify-center items-center text-slate-600 rounded-md cursor-pointer text-center text-sm px-2"
+                  onClick={() => router.push(`/forms/answer-form/${item?.id}`)}
+                >
+                  <p>{item?.title}</p>
+                </div>
+              );
+            } else {
+              return null;
+            }
           })}
     </div>
   );
