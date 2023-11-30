@@ -76,7 +76,11 @@ const ResultsPage = () => {
       );
       // console.log("res :", { res });
       if (res.status === 200 || res?.data?.meta?.status === true) {
-        setData(res?.data?.data);
+        let withResults = res?.data?.data?.data
+          ?.map((item) => (_.isEmpty(item?.results) ? null : item))
+          .filter(Boolean);
+        setData({ ...res?.data?.data, data: withResults });
+        // console.log("data :", { res: res?.data?.data, withResults });
       }
     } catch (error) {
       console.log("error :", { error });
