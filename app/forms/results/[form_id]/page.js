@@ -13,7 +13,7 @@ import { Popconfirm, Tooltip } from "antd";
 const ResultsByIdPage = ({ params }) => {
   const router = useRouter();
   const { data: session } = useSession();
-  const { id } = params;
+  const { form_id } = params;
 
   const [selectedData, setSelectedData] = useState({});
 
@@ -46,7 +46,9 @@ const ResultsByIdPage = ({ params }) => {
             <Tooltip title="View Answers" className="cursor-pointer">
               <EyeOutlined
                 onClick={() =>
-                  router.push(`/forms/results/${id}/view/${item?.users?.id}`)
+                  router.push(
+                    `/forms/results/${form_id}/view/${item?.users?.id}`
+                  )
                 }
               />
             </Tooltip>
@@ -63,7 +65,7 @@ const ResultsByIdPage = ({ params }) => {
         page: page,
         row: pageSize,
         include: "users",
-        filter: { form_id: id },
+        filter: { form_id: form_id },
       };
       let res = await axios.get(
         `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/results/`,
