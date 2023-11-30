@@ -9,13 +9,14 @@ import _ from "lodash";
 const FormPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  console.log("session :", { session });
 
   const [formData, setFormData] = useState([]);
 
   const getForms = async () => {
     try {
       let res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/forms?include=sections.questions.subQuestion.subQuestion.subQuestion.subQuestion,sections.questions.answers,sections.questions.subQuestion.answers,results`,
+        `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/forms?include=results`,
         {
           headers: {
             Authorization: `Bearer ${session?.accessToken}`,

@@ -27,6 +27,8 @@ const TableComponent = (props) => {
     return () => {};
   }, [page, pageSize]);
 
+  console.log("data :", { data });
+
   return (
     <Table
       columns={columns}
