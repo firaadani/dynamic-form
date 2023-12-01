@@ -1014,153 +1014,323 @@ const EditForm = ({ params }) => {
                   sectionValues?.[sectionField.name]?.questions?.[field.name]
                     ?.type
                 ) ? (
-                  <Form.Item label="Options">
-                    <Form.List name={[field.name, "options"]}>
-                      {(subFields, subOpt) => (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            rowGap: 16,
-                          }}
-                        >
-                          {subFields.map((subField) => (
-                            <div
-                              key={subField.key}
-                              className="w-full flex gap-4"
-                            >
-                              <Form.Item
-                                noStyle
-                                name={[subField.name, "option"]}
-                              >
-                                <Input
-                                  name={`questionOptions-${parent_id}-${field.name}`}
-                                  onBlur={(e) => handleBlur({ e: e })}
-                                  placeholder={`Input option #${
-                                    subField.key + 1
-                                  } `}
-                                />
-                              </Form.Item>
-                              <CloseOutlined
-                                onClick={() => {
-                                  subOpt.remove(subField.name);
-                                }}
-                              />
-                            </div>
-                          ))}
-                          <Button
-                            type="dashed"
-                            onClick={() => subOpt.add()}
-                            block
+                  <>
+                    <Form.Item label="Options">
+                      <Form.List name={[field.name, "options"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
                           >
-                            + Add Options
-                          </Button>
-                        </div>
-                      )}
-                    </Form.List>
-                  </Form.Item>
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                >
+                                  <Input
+                                    name={`questionOptions-${parent_id}-${field.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input option #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                            >
+                              + Add Options
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                    <Form.Item label="Answer Key">
+                      <Form.List name={[field.name, "answer_keys"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
+                          >
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                  help={`Jika ada lebih dari 1 jawaban, tambahkan menggunakan tombol "Tambah Answer Key". Pastikan huruf kecil/kapital sesuai dengan opsi`}
+                                >
+                                  <Input
+                                    name={`questionAnswer_keys-${parent_id}-${field.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input answer key #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                              disabled={
+                                sectionValues?.[sectionField.name]?.questions?.[
+                                  field.name
+                                ]?.type === "Multiple Choice" &&
+                                subFields.length > 0
+                                  ? true
+                                  : false
+                              }
+                            >
+                              + Add Answer Key
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                  </>
                 ) : null}
                 {splitted?.length === 2 &&
                 ["Multiple Choice", "Checkboxes"]?.includes(
                   sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
                     ?.questions?.[field.name]?.type
                 ) ? (
-                  <Form.Item label="Options">
-                    <Form.List name={[field.name, "options"]}>
-                      {(subFields, subOpt) => (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            rowGap: 16,
-                          }}
-                        >
-                          {subFields.map((subField) => (
-                            <div
-                              key={subField.key}
-                              className="w-full flex gap-4"
-                            >
-                              <Form.Item
-                                noStyle
-                                name={[subField.name, "option"]}
-                              >
-                                <Input
-                                  name={`questionOptions-${parent_id}-${field.name}`}
-                                  onBlur={(e) => handleBlur({ e: e })}
-                                  placeholder={`Input option #${
-                                    subField.key + 1
-                                  } `}
-                                />
-                              </Form.Item>
-                              <CloseOutlined
-                                onClick={() => {
-                                  subOpt.remove(subField.name);
-                                }}
-                              />
-                            </div>
-                          ))}
-                          <Button
-                            type="dashed"
-                            onClick={() => subOpt.add()}
-                            block
+                  <>
+                    <Form.Item label="Options">
+                      <Form.List name={[field.name, "options"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
                           >
-                            + Add Options
-                          </Button>
-                        </div>
-                      )}
-                    </Form.List>
-                  </Form.Item>
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                >
+                                  <Input
+                                    name={`questionOptions-${parent_id}-${field.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input option #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                            >
+                              + Add Options
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                    <Form.Item label="Answer Key">
+                      <Form.List name={[field.name, "answer_keys"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
+                          >
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                  help={`Jika ada lebih dari 1 jawaban, tambahkan menggunakan tombol "Tambah Answer Key". Pastikan huruf kecil/kapital sesuai dengan opsi`}
+                                >
+                                  <Input
+                                    name={`questionAnswer_keys-${parent_id}-${field.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input answer key #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                              disabled={
+                                sectionValues?.[splitted[0]]?.questions?.[
+                                  splitted[1]
+                                ]?.questions?.[field.name]?.type ===
+                                  "Multiple Choice" && subFields.length > 0
+                                  ? true
+                                  : false
+                              }
+                            >
+                              + Add Answer Key
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                  </>
                 ) : null}
                 {splitted?.length === 3 &&
                 ["Multiple Choice", "Checkboxes"]?.includes(
                   sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
                     ?.questions?.[splitted[2]]?.questions?.[field.name]?.type
                 ) ? (
-                  <Form.Item label="Options">
-                    <Form.List name={[field.name, "options"]}>
-                      {(subFields, subOpt) => (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            rowGap: 16,
-                          }}
-                        >
-                          {subFields.map((subField) => (
-                            <div
-                              key={subField.key}
-                              className="w-full flex gap-4"
-                            >
-                              <Form.Item
-                                noStyle
-                                name={[subField.name, "option"]}
-                              >
-                                <Input
-                                  name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
-                                  onBlur={(e) => handleBlur({ e: e })}
-                                  placeholder={`Input option #${
-                                    subField.key + 1
-                                  } `}
-                                />
-                              </Form.Item>
-                              <CloseOutlined
-                                onClick={() => {
-                                  subOpt.remove(subField.name);
-                                }}
-                              />
-                            </div>
-                          ))}
-                          <Button
-                            type="dashed"
-                            onClick={() => subOpt.add()}
-                            block
+                  <>
+                    <Form.Item label="Options">
+                      <Form.List name={[field.name, "options"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
                           >
-                            + Add Options
-                          </Button>
-                        </div>
-                      )}
-                    </Form.List>
-                  </Form.Item>
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                >
+                                  <Input
+                                    name={`questionOptions-${sectionField.name}-${field.name}-${subField.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input option #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                            >
+                              + Add Options
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                    <Form.Item label="Answer Key">
+                      <Form.List name={[field.name, "answer_keys"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
+                          >
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                  help={`Jika ada lebih dari 1 jawaban, tambahkan menggunakan tombol "Tambah Answer Key". Pastikan huruf kecil/kapital sesuai dengan opsi`}
+                                >
+                                  <Input
+                                    name={`questionAnswer_keys-${parent_id}-${field.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input answer key #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                              disabled={
+                                sectionValues?.[splitted[0]]?.questions?.[
+                                  splitted[1]
+                                ]?.questions?.[splitted[2]]?.questions?.[
+                                  field.name
+                                ]?.type === "Multiple Choice" &&
+                                subFields.length > 0
+                                  ? true
+                                  : false
+                              }
+                            >
+                              + Add Answer Key
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                  </>
                 ) : null}
                 {splitted?.length === 4 &&
                 ["Multiple Choice", "Checkboxes"]?.includes(
@@ -1168,51 +1338,109 @@ const EditForm = ({ params }) => {
                     ?.questions?.[splitted[2]]?.questions?.[splitted[3]]
                     ?.questions?.[field.name]?.type
                 ) ? (
-                  <Form.Item label="Options">
-                    <Form.List name={[field.name, "options"]}>
-                      {(subFields, subOpt) => (
-                        <div
-                          style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            rowGap: 16,
-                          }}
-                        >
-                          {subFields.map((subField) => (
-                            <div
-                              key={subField.key}
-                              className="w-full flex gap-4"
-                            >
-                              <Form.Item
-                                noStyle
-                                name={[subField.name, "option"]}
-                              >
-                                <Input
-                                  name={`questionOptions-${parent_id}-${field.name}`}
-                                  onBlur={(e) => handleBlur({ e: e })}
-                                  placeholder={`Input option #${
-                                    subField.key + 1
-                                  } `}
-                                />
-                              </Form.Item>
-                              <CloseOutlined
-                                onClick={() => {
-                                  subOpt.remove(subField.name);
-                                }}
-                              />
-                            </div>
-                          ))}
-                          <Button
-                            type="dashed"
-                            onClick={() => subOpt.add()}
-                            block
+                  <>
+                    <Form.Item label="Options">
+                      <Form.List name={[field.name, "options"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
                           >
-                            + Add Options
-                          </Button>
-                        </div>
-                      )}
-                    </Form.List>
-                  </Form.Item>
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                >
+                                  <Input
+                                    name={`questionOptions-${parent_id}-${field.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input option #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                            >
+                              + Add Options
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                    <Form.Item label="Answer Key">
+                      <Form.List name={[field.name, "answer_keys"]}>
+                        {(subFields, subOpt) => (
+                          <div
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              rowGap: 16,
+                            }}
+                          >
+                            {subFields.map((subField) => (
+                              <div
+                                key={subField.key}
+                                className="w-full flex gap-4"
+                              >
+                                <Form.Item
+                                  noStyle
+                                  name={[subField.name, "option"]}
+                                  help={`Jika ada lebih dari 1 jawaban, tambahkan menggunakan tombol "Tambah Answer Key". Pastikan huruf kecil/kapital sesuai dengan opsi`}
+                                >
+                                  <Input
+                                    name={`questionAnswer_keys-${parent_id}-${field.name}`}
+                                    onBlur={(e) => handleBlur({ e: e })}
+                                    placeholder={`Input answer key #${
+                                      subField.key + 1
+                                    } `}
+                                  />
+                                </Form.Item>
+                                <CloseOutlined
+                                  onClick={() => {
+                                    subOpt.remove(subField.name);
+                                  }}
+                                />
+                              </div>
+                            ))}
+                            <Button
+                              type="dashed"
+                              onClick={() => subOpt.add()}
+                              block
+                              disabled={
+                                sectionValues?.[splitted[0]]?.questions?.[
+                                  splitted[1]
+                                ]?.questions?.[splitted[2]]?.questions?.[
+                                  splitted[3]
+                                ]?.questions?.[field.name]?.type ===
+                                  "Multiple Choice" && subFields.length > 0
+                                  ? true
+                                  : false
+                              }
+                            >
+                              + Add Answer Key
+                            </Button>
+                          </div>
+                        )}
+                      </Form.List>
+                    </Form.Item>
+                  </>
                 ) : null}
 
                 {/* SHOW ADD QUESTION BUTTON IF TYPE: SECTION IS SELECTED */}
@@ -1251,49 +1479,6 @@ const EditForm = ({ params }) => {
                     })
                   : null}
 
-                <Form.Item label="Answer Key">
-                  <Form.List name={[field.name, "answer_keys"]}>
-                    {(subFields, subOpt) => (
-                      <div
-                        style={{
-                          display: "flex",
-                          flexDirection: "column",
-                          rowGap: 16,
-                        }}
-                      >
-                        {subFields.map((subField) => (
-                          <div key={subField.key} className="w-full flex gap-4">
-                            <Form.Item
-                              noStyle
-                              name={[subField.name, "option"]}
-                              help={`Jika ada lebih dari 1 jawaban, tambahkan menggunakan tombol "Tambah Answer Key". Pastikan huruf kecil/kapital sesuai dengan opsi`}
-                            >
-                              <Input
-                                name={`questionAnswer_keys-${parent_id}-${field.name}`}
-                                onBlur={(e) => handleBlur({ e: e })}
-                                placeholder={`Input answer key #${
-                                  subField.key + 1
-                                } `}
-                              />
-                            </Form.Item>
-                            <CloseOutlined
-                              onClick={() => {
-                                subOpt.remove(subField.name);
-                              }}
-                            />
-                          </div>
-                        ))}
-                        <Button
-                          type="dashed"
-                          onClick={() => subOpt.add()}
-                          block
-                        >
-                          + Add Answer Key
-                        </Button>
-                      </div>
-                    )}
-                  </Form.List>
-                </Form.Item>
                 {/* <Form.Item
                   label="Answer Key"
                   name={[field.name, "answer_key"]}
