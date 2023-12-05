@@ -22,7 +22,6 @@ const App = () => {
   const { data: session } = useSession();
   const router = useRouter();
 
-  console.log("session :", { session });
   const url = process.env.NEXT_PUBLIC_BE_URL;
 
   const postForm = async () => {

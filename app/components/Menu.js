@@ -7,6 +7,7 @@ import {
 } from "@ant-design/icons";
 import { Menu } from "antd";
 import { usePathname, useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 function getItem(label, key, icon, children, type) {
   return {
@@ -29,9 +30,36 @@ const items = [
     getItem("Form Results", "/forms/results", null, null, null),
   ]),
 ];
+
+const getItemsForRole = (role) => {
+  switch (role) {
+    case "SuperAdmin":
+      return items; // Admin has all common items
+    case "Admin":
+      return items.filter((item) => item.key !== "/user-management"); // Admin has all common items
+    case "User":
+      // User only sees specific items (e.g., remove "Create Form" item)
+      return items.filter((item) => {
+        if (
+          item.key === "/user-management" ||
+          item?.children?.[0]?.key === "/forms/create-form"
+        ) {
+          return false;
+        } else {
+          return true;
+        }
+      });
+    // Add more cases as needed
+    default:
+      return [];
+  }
+};
+
 const MenuComponent = () => {
   const router = useRouter();
   const pathname = usePathname();
+  const { data: session } = useSession();
+  // console.log("session :", { session });
 
   const [selectedKeys, setSelectedKeys] = useState([]);
 
@@ -57,7 +85,7 @@ const MenuComponent = () => {
       defaultSelectedKeys={["1"]}
       defaultOpenKeys={["sub1"]}
       mode="inline"
-      items={items}
+      items={getItemsForRole(session.user.role)}
       selectedKeys={selectedKeys}
     />
   );

@@ -9,6 +9,7 @@ import _ from "lodash";
 const FormPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  const role = session?.user?.role;
 
   const [formData, setFormData] = useState([]);
 
@@ -40,6 +41,9 @@ const FormPage = () => {
     return () => {};
   }, []);
 
+  if (role === "User") {
+    router.push(`/dashboard`);
+  }
   return (
     <div className="w-full  p-10 flex gap-4 flex-wrap">
       <div

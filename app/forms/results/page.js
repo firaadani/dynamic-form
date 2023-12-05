@@ -13,7 +13,6 @@ import { Popconfirm, Tooltip } from "antd";
 const ResultsPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  console.log("session :", { session });
 
   const [selectedData, setSelectedData] = useState({});
 

@@ -49,14 +49,23 @@ export const authOptions = {
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user, account, profile }) {
-      console.log("token, user, account :", { token, user, account, profile });
+    async jwt({ token, user, trigger, session }) {
+      token.exp = Math.floor(Date.now() / 1000) + 60 * 60; // 1 minute
+
+      if (trigger === "update") {
+        return { ...token, ...session.user };
+      }
       return { ...token, ...user };
     },
     async session({ session, token, user }) {
       await token;
       console.log("session,token,user :", { session, token, user });
-      session.user && (session.accessToken = token.token);
+
+      session.user &&
+        (session.accessToken = token.token) &&
+        (session.user.accessToken = token.token) &&
+        (session.user.role = token.role) &&
+        (session.exp = token.exp);
       return session;
     },
   },

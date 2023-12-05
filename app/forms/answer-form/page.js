@@ -9,7 +9,6 @@ import _ from "lodash";
 const FormPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
-  console.log("session :", { session });
 
   const [formData, setFormData] = useState([]);
 

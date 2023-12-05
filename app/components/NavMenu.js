@@ -1,15 +1,87 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import Link from "next/link";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession, signIn, signOut, getSession } from "next-auth/react";
 import SideMenu from "./SideMenu";
 import { usePathname } from "next/navigation";
 import { titleCase } from "@/lib/helpers";
+import axios from "axios";
 
 function AuthButton() {
-  const { data: session, status } = useSession();
-  // console.log("session :", { session, status });
+  const { data: session, update, status } = useSession();
+
+  const [currentSession, setCurrentSession] = useState({ exp: session?.exp });
+
+  useEffect(() => {
+    let a = async () => {
+      const cSession = await getSession();
+      setCurrentSession(cSession);
+    };
+
+    a();
+
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    const refreshSession = async () => {
+      try {
+        // Get the current session to check the expiration time
+
+        // Check if the session is about to expire (e.g., within the next 5 minutes)
+        const isSessionAboutToExpire =
+          currentSession &&
+          currentSession.exp &&
+          Date.now() / 1000 + 60 * 60 > currentSession.exp;
+
+        if (isSessionAboutToExpire) {
+          // Perform the token refresh logic (e.g., call your API to refresh the token)
+          const refreshedSession = await axios.get(
+            `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/refresh`,
+            {
+              headers: {
+                Authorization: `Bearer ${session?.accessToken}`,
+              },
+            }
+          );
+          console.log("refreshedSession :", { refreshedSession });
+
+          await update({
+            ...session,
+            user: {
+              ...session?.user,
+              accessToken: refreshedSession?.data?.data?.token,
+            },
+            accessToken: refreshedSession?.data?.data?.token,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60,
+          });
+
+          setCurrentSession({
+            ...session,
+            user: {
+              ...session?.user,
+              accessToken: refreshedSession?.data?.data?.token,
+            },
+            accessToken: refreshedSession?.data?.data?.token,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60,
+          });
+
+          // Update the session with the refreshed session data
+          // mutate('/api/auth/session', refreshedSession);
+        }
+      } catch (error) {
+        console.error("Error refreshing session:", error);
+      }
+    };
+
+    // Refresh the session periodically (e.g., every 5 minutes)
+    console.log("session :", { session });
+    const refreshInterval = setInterval(refreshSession, 10 * 60 * 1000);
+
+    return () => clearInterval(refreshInterval);
+  }, [session]);
+
   const pathname = usePathname();
 
   return (

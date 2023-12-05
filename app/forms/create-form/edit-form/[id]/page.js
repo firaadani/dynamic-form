@@ -41,7 +41,6 @@ const EditForm = ({ params }) => {
   const { data: session } = useSession();
   const { id } = params;
 
-  console.log("session :", { session });
   const url = process.env.NEXT_PUBLIC_BE_URL;
 
   const [dataForm, setDataForm] = useState({});

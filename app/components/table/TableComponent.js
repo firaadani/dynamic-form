@@ -3,7 +3,7 @@ import { Table } from "antd";
 import React, { useState, useEffect } from "react";
 
 const TableComponent = (props) => {
-  const { fetch, session, columns } = props;
+  const { fetch, session, columns, refresh } = props;
 
   // ==================== TABLE STATES ====================
   const [data, setData] = useState([]);
@@ -25,7 +25,7 @@ const TableComponent = (props) => {
     // console.log("page, pageSize :", { page, pageSize });
 
     return () => {};
-  }, [page, pageSize]);
+  }, [page, pageSize, refresh]);
 
   console.log("data :", { data });
 
