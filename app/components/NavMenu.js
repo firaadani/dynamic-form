@@ -12,6 +12,7 @@ function AuthButton() {
   const { data: session, update, status } = useSession();
 
   const [currentSession, setCurrentSession] = useState({ exp: session?.exp });
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     let a = async () => {
@@ -51,6 +52,7 @@ function AuthButton() {
             ...session,
             user: {
               ...session?.user,
+              token: refreshedSession?.data?.data?.token,
               accessToken: refreshedSession?.data?.data?.token,
             },
             accessToken: refreshedSession?.data?.data?.token,
@@ -61,6 +63,7 @@ function AuthButton() {
             ...session,
             user: {
               ...session?.user,
+              token: refreshedSession?.data?.data?.token,
               accessToken: refreshedSession?.data?.data?.token,
             },
             accessToken: refreshedSession?.data?.data?.token,
@@ -72,6 +75,7 @@ function AuthButton() {
         }
       } catch (error) {
         console.error("Error refreshing session:", error);
+        // signOut();
       }
     };
 
