@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import {
   Button,
   Form,
@@ -19,6 +18,7 @@ import { userColumns } from "../components/columns/userColumns";
 import TableComponent from "../components/table/TableComponent";
 import { showError, showSuccess } from "@/lib/helpersClient";
 import { useRouter } from "next/navigation";
+import useAxiosAuth from "../../lib/hooks/useAxiosAuth";
 
 const UserManagementPage = () => {
   const { data: session } = useSession();
@@ -26,6 +26,7 @@ const UserManagementPage = () => {
   const [form] = Form.useForm();
   const url = process.env.NEXT_PUBLIC_BE_URL;
   const router = useRouter();
+  const axiosAuth = useAxiosAuth();
 
   const [selectedData, setSelectedData] = useState({});
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -112,7 +113,7 @@ const UserManagementPage = () => {
 
   const deleteUser = async () => {
     try {
-      let res = await axios.delete(
+      let res = await axiosAuth.delete(
         `${url}api/dashboard/users/${selectedData?.id}`,
         {
           headers: {
@@ -136,13 +137,7 @@ const UserManagementPage = () => {
         page: page,
         row: pageSize,
       };
-      let res = await axios.get(`${url}api/dashboard/users`, {
-        params: params,
-        headers: {
-          Authorization: `Bearer ${session?.accessToken}`,
-          // Add any other headers as needed
-        },
-      });
+      let res = await axiosAuth.get(`api/dashboard/users`, { params });
       console.log("res :", { res });
       if (res.status === 200 || res?.data?.meta?.status === true) {
         setData(res?.data?.data);
@@ -172,7 +167,7 @@ const UserManagementPage = () => {
         console.log("formData :", { formData });
         const newUser = "api/dashboard/users";
         const editUser = `api/dashboard/users/${selectedData?.id}`;
-        let res = await axios.post(
+        let res = await axiosAuth.post(
           `${url}${isEdit ? editUser : newUser}`,
           formData,
           {

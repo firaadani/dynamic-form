@@ -85,7 +85,7 @@ const MenuComponent = () => {
       defaultSelectedKeys={["1"]}
       defaultOpenKeys={["sub1"]}
       mode="inline"
-      items={getItemsForRole(session.user.role)}
+      items={getItemsForRole(session?.user?.role)}
       selectedKeys={selectedKeys}
     />
   );
