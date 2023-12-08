@@ -4,15 +4,16 @@ import { EyeOutlined } from "@ant-design/icons";
 
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import _ from "lodash";
 import TableComponent from "@/app/components/table/TableComponent";
 import { formResultColumns } from "@/app/components/columns/formResultColums";
 import { Popconfirm, Tooltip } from "antd";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 const ResultsPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
+  const axiosAuth = useAxiosAuth();
 
   const [selectedData, setSelectedData] = useState({});
 
@@ -63,16 +64,9 @@ const ResultsPage = () => {
         row: pageSize,
         include: "results",
       };
-      let res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/forms`,
-        {
-          params,
-          headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
-            // Add any other headers as needed
-          },
-        }
-      );
+      let res = await axiosAuth.get(`api/dashboard/forms`, {
+        params,
+      });
       // console.log("res :", { res });
       if (res.status === 200 || res?.data?.meta?.status === true) {
         let withResults = res?.data?.data?.data

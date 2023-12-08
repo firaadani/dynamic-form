@@ -114,12 +114,7 @@ const UserManagementPage = () => {
   const deleteUser = async () => {
     try {
       let res = await axiosAuth.delete(
-        `${url}api/dashboard/users/${selectedData?.id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
-          },
-        }
+        `api/dashboard/users/${selectedData?.id}`
       );
       console.log("res :", { res });
       if (res?.status === 200) {
@@ -168,13 +163,8 @@ const UserManagementPage = () => {
         const newUser = "api/dashboard/users";
         const editUser = `api/dashboard/users/${selectedData?.id}`;
         let res = await axiosAuth.post(
-          `${url}${isEdit ? editUser : newUser}`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${session?.accessToken}`,
-            },
-          }
+          `${isEdit ? editUser : newUser}`,
+          formData
         );
         console.log("res :", { res });
         if (res?.status === 201) {

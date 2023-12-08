@@ -3,33 +3,26 @@ import React, { useState, useEffect } from "react";
 import { PlusOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import _ from "lodash";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 const FormPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const role = session?.user?.role;
+  const axiosAuth = useAxiosAuth();
 
   const [formData, setFormData] = useState([]);
 
   const getForms = async () => {
     try {
-      let res = await axios.get(
-        `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/forms?row=all`,
-        {
-          headers: {
-            Authorization: `Bearer ${session?.accessToken}`,
-            // Add any other headers as needed
-          },
-        }
-      );
+      let res = await axiosAuth.get(`api/dashboard/forms?row=all`);
       // console.log("res :", { res });
       if (res.status === 200 || res?.data?.meta?.status === true) {
         setFormData(res?.data);
       }
     } catch (error) {
-      console.log("error :", { error });
+      console.log("error createFormPage :", { error });
     }
   };
 
