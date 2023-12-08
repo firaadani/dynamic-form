@@ -9,11 +9,13 @@ import _ from "lodash";
 import TableComponent from "@/app/components/table/TableComponent";
 import { formResultByIdColumns } from "@/app/components/columns/formResultColums";
 import { Popconfirm, Tooltip } from "antd";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 const ResultsByIdPage = ({ params }) => {
   const router = useRouter();
   const { data: session } = useSession();
   const { form_id } = params;
+  const axiosAuth = useAxiosAuth();
 
   const [selectedData, setSelectedData] = useState({});
 
@@ -67,7 +69,7 @@ const ResultsByIdPage = ({ params }) => {
         include: "users",
         filter: { form_id: form_id },
       };
-      let res = await axios.get(
+      let res = await axiosAuth.get(
         `${process.env.NEXT_PUBLIC_BE_URL}api/dashboard/results/`,
         {
           params,

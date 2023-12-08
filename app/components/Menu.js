@@ -18,14 +18,24 @@ function getItem(label, key, icon, children, type) {
     type,
   };
 }
-const items = [
+const itemsSuperadmin = [
   getItem("Dashboard", "/dashboard", <AppstoreOutlined />, null, null),
   getItem("User Management", "/user-management", <UserOutlined />, null, null),
-  // {
-  //   type: "divider",
-  // },
-  getItem("Forms", "sub4", <FormOutlined />, [
+  getItem("Forms", "/forms", <FormOutlined />, [
     getItem("Create Form", "/forms/create-form", null, null, null),
+    getItem("Form Results", "/forms/results", null, null, null),
+  ]),
+];
+const itemsAdmin = [
+  getItem("Dashboard", "/dashboard", <AppstoreOutlined />, null, null),
+  getItem("Forms", "/forms", <FormOutlined />, [
+    getItem("Create Form", "/forms/create-form", null, null, null),
+    getItem("Form Results", "/forms/results", null, null, null),
+  ]),
+];
+const itemsUser = [
+  getItem("Dashboard", "/dashboard", <AppstoreOutlined />, null, null),
+  getItem("Forms", "/forms", <FormOutlined />, [
     getItem("Answer Form", "/forms/answer-form", null, null, null),
     getItem("Form Results", "/forms/results", null, null, null),
   ]),
@@ -34,21 +44,11 @@ const items = [
 const getItemsForRole = (role) => {
   switch (role) {
     case "SuperAdmin":
-      return items; // Admin has all common items
+      return itemsSuperadmin;
     case "Admin":
-      return items.filter((item) => item.key !== "/user-management"); // Admin has all common items
+      return itemsAdmin;
     case "User":
-      // User only sees specific items (e.g., remove "Create Form" item)
-      return items.filter((item) => {
-        if (
-          item.key === "/user-management" ||
-          item?.children?.[0]?.key === "/forms/create-form"
-        ) {
-          return false;
-        } else {
-          return true;
-        }
-      });
+      return itemsUser;
     // Add more cases as needed
     default:
       return [];
