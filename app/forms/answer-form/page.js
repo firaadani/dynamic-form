@@ -35,12 +35,12 @@ const FormPage = () => {
     return () => {};
   }, [session]);
 
-  return (
-    <div className="w-full  p-10 flex gap-4 flex-wrap">
-      {_.isEmpty(formData?.data)
-        ? null
-        : formData?.data?.map((item, index) => {
-            if (_.isEmpty(item?.results)) {
+  if (session?.user?.role === "User") {
+    return (
+      <div className="w-full  p-10 flex gap-4 flex-wrap">
+        {_.isEmpty(formData?.data)
+          ? null
+          : formData?.data?.map((item, index) => {
               return (
                 <div
                   key={index}
@@ -50,12 +50,12 @@ const FormPage = () => {
                   <p>{item?.title}</p>
                 </div>
               );
-            } else {
-              return null;
-            }
-          })}
-    </div>
-  );
+            })}
+      </div>
+    );
+  } else {
+    router.push(`/dashboard`);
+  }
 };
 
 export default FormPage;
