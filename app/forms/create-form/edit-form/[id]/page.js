@@ -15,8 +15,8 @@ import {
 
 import dynamic from "next/dynamic";
 import _ from "lodash";
-import axios from "axios";
 import { useSession } from "next-auth/react";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 // ==================== USEWATCH ====================
 
@@ -29,6 +29,7 @@ const CKEditor = dynamic(
 );
 const EditForm = ({ params }) => {
   const [form] = Form.useForm();
+  const axiosAuth = useAxiosAuth();
 
   // ==================== useWatch ====================
   const formDescValues = Form.useWatch("formDescription", form);
@@ -47,7 +48,7 @@ const EditForm = ({ params }) => {
 
   const getFormById = async () => {
     try {
-      let res = await axios.get(
+      let res = await axiosAuth.get(
         `${url}api/dashboard/forms/${id}?include=sections.questions.subQuestion.subQuestion.subQuestion.subQuestion,sections.questions.answers,sectionsCount`,
         {
           headers: {
@@ -74,7 +75,7 @@ const EditForm = ({ params }) => {
         description: data ?? values?.formDescription,
         _method: "PATCH",
       };
-      let res = await axios.post(
+      let res = await axiosAuth.post(
         `${url}api/dashboard/forms/${dataForm?.id}`,
         params,
         {
@@ -107,7 +108,7 @@ const EditForm = ({ params }) => {
       let postURL = newItem
         ? `${url}api/dashboard/sections/`
         : `${url}api/dashboard/sections/${dataForm?.sections?.[index]?.id}`;
-      let res = await axios.post(postURL, params, {
+      let res = await axiosAuth.post(postURL, params, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
           // Add any other headers as needed
@@ -123,7 +124,7 @@ const EditForm = ({ params }) => {
   const deleteSection = async (index) => {
     const sectionId = dataForm?.sections?.[index]?.id;
     try {
-      let res = await axios.delete(
+      let res = await axiosAuth.delete(
         `${url}api/dashboard/sections/${sectionId}`,
         {
           headers: {
@@ -321,7 +322,7 @@ const EditForm = ({ params }) => {
               ? dataFormSubQuestion?.id
               : dataFormQuestion?.id
           }`;
-      let res = await axios.post(postURL, params, {
+      let res = await axiosAuth.post(postURL, params, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
           // Add any other headers as needed
@@ -368,7 +369,7 @@ const EditForm = ({ params }) => {
           ?.sub_question?.[subquestionIndex]?.id
       : dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]?.id;
     try {
-      let res = await axios.delete(
+      let res = await axiosAuth.delete(
         `${url}api/dashboard/questions/${questionId}`,
         {
           headers: {

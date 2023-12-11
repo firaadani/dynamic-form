@@ -2,11 +2,10 @@
 
 import React from "react";
 import { Button } from "antd";
+import { useRouter } from "next/navigation";
 
 export default function App() {
-  return (
-    <div className="App max-w-md flex justify-center items-start">
-      <Button type="primary bg-indigo-500">Button</Button>
-    </div>
-  );
+  const router = useRouter();
+  router.push(`/api/auth/signin`);
+  return <></>;
 }

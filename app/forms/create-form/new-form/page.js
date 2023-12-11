@@ -6,9 +6,9 @@ import { Button, Card, Form, Input, Select, Space, Typography } from "antd";
 
 import dynamic from "next/dynamic";
 import _, { isEmpty } from "lodash";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 // Use client-side rendering for CKEditor component
 const CKEditor = dynamic(
@@ -21,6 +21,7 @@ const App = () => {
   const [form] = Form.useForm();
   const { data: session } = useSession();
   const router = useRouter();
+  const axiosAuth = useAxiosAuth();
 
   const url = process.env.NEXT_PUBLIC_BE_URL;
 
@@ -31,7 +32,7 @@ const App = () => {
         title: values?.title,
         access: values?.access,
       };
-      let res = await axios.post(`${url}api/dashboard/forms`, params, {
+      let res = await axiosAuth.post(`${url}api/dashboard/forms`, params, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
           // Add any other headers as needed

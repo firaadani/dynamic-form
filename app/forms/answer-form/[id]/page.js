@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { useSession } from "next-auth/react";
 import {
   Button,
@@ -21,6 +20,7 @@ import _ from "lodash";
 import moment from "moment";
 import { showError, showSuccess } from "@/lib/helpersClient";
 import { useRouter } from "next/navigation";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 const AnswerFormPage = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
@@ -28,6 +28,7 @@ const AnswerFormPage = ({ params }) => {
   const { id } = params;
   const [form] = Form.useForm();
   const router = useRouter();
+  const axiosAuth = useAxiosAuth();
 
   // ==================== STATES ====================
   const [dataForm, setDataForm] = useState({});
@@ -71,7 +72,7 @@ const AnswerFormPage = ({ params }) => {
 
     // Replace the URL with your actual server endpoint
     try {
-      let res = await axios.post(`${url}api/dashboard/answers`, formData, {
+      let res = await axiosAuth.post(`${url}api/dashboard/answers`, formData, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },
@@ -103,7 +104,7 @@ const AnswerFormPage = ({ params }) => {
 
   const getFormById = async () => {
     try {
-      let res = await axios.get(
+      let res = await axiosAuth.get(
         `${url}api/dashboard/forms/${id}?include=sections.questions.answers,sections.questions.subQuestion.answers,sections.questions.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.subQuestion.answers`,
         {
           headers: {
@@ -126,7 +127,7 @@ const AnswerFormPage = ({ params }) => {
       formData.append("answer", answer);
       formData.append("question_id", id);
 
-      let res = await axios.post(`${url}api/dashboard/answers`, formData, {
+      let res = await axiosAuth.post(`${url}api/dashboard/answers`, formData, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },
@@ -142,7 +143,7 @@ const AnswerFormPage = ({ params }) => {
   const submitForm = async () => {
     try {
       let params = { form_id: id };
-      let res = await axios.post(`${url}api/dashboard/results`, params, {
+      let res = await axiosAuth.post(`${url}api/dashboard/results`, params, {
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
         },

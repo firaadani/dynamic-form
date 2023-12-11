@@ -18,14 +18,7 @@ const TableComponent = (props) => {
     }
 
     return () => {};
-  }, [session]);
-
-  useEffect(() => {
-    fetch({ page, pageSize, setData });
-    // console.log("page, pageSize :", { page, pageSize });
-
-    return () => {};
-  }, [page, pageSize, refresh]);
+  }, [session, page, pageSize, refresh]);
 
   console.log("data :", { data });
 

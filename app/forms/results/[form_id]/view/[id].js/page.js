@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { RightOutlined, CheckOutlined } from "@ant-design/icons";
 import _ from "lodash";
+import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 const ViewResultsPage = ({ params }) => {
   const { data: session } = useSession();
@@ -12,6 +12,7 @@ const ViewResultsPage = ({ params }) => {
   const form_id = pathname?.split("/")?.[3];
   const { id } = params;
   const url = process.env.NEXT_PUBLIC_BE_URL;
+  const axiosAuth = useAxiosAuth();
 
   // ==================== STATES ====================
   const [data, setData] = useState(null);
@@ -25,7 +26,7 @@ const ViewResultsPage = ({ params }) => {
           "sections.questions.answers,sections.questions.subQuestion.answers,sections.questions.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.subQuestion.answers,users",
         user_id: id,
       };
-      let res = await axios.get(`${url}api/dashboard/forms/${form_id}`, {
+      let res = await axiosAuth.get(`${url}api/dashboard/forms/${form_id}`, {
         params,
         headers: {
           Authorization: `Bearer ${session?.accessToken}`,
@@ -79,13 +80,14 @@ const ViewResultsPage = ({ params }) => {
       );
     } else {
       let answer = self.answers?.[0]?.answer;
+      // console.log("answer :", { answer });
 
       if (["Multiple Choice", "Checkboxes"]?.includes(self?.type)) {
         return (
           <div key={index}>
             <p className="my-2">{self?.question}</p>
             <div className="bg-indigo-300 w-full rounded-md px-3 py-1 flex gap-4">
-              {_.isArray(JSON.parse(answer)) ? (
+              {!_.isEmpty(answer) && _.isArray(JSON.parse(answer)) ? (
                 JSON.parse(self.option)?.map((item, index) => {
                   const includes = _.map(JSON.parse(answer), "option").includes(
                     item?.option
@@ -185,7 +187,7 @@ export default ViewResultsPage;
 
 // "use client";
 // import React, { useState, useEffect } from "react";
-// import axios from "axios";
+// import axiosAuth from "axiosAuth";
 // import { useSession } from "next-auth/react";
 // import {
 //   Button,
@@ -258,7 +260,7 @@ export default ViewResultsPage;
 
 //     // Replace the URL with your actual server endpoint
 //     try {
-//       let res = await axios.post(`${url}api/dashboard/answers`, formData, {
+//       let res = await axiosAuth.post(`${url}api/dashboard/answers`, formData, {
 //         headers: {
 //           Authorization: `Bearer ${session?.accessToken}`,
 //         },
@@ -295,7 +297,7 @@ export default ViewResultsPage;
 //           "sections.questions.answers,sections.questions.subQuestion.answers,sections.questions.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.subQuestion.answers,users",
 //         user_id: id,
 //       };
-//       let res = await axios.get(`${url}api/dashboard/forms/${form_id}`, {
+//       let res = await axiosAuth.get(`${url}api/dashboard/forms/${form_id}`, {
 //         params,
 //         headers: {
 //           Authorization: `Bearer ${session?.accessToken}`,
@@ -313,7 +315,7 @@ export default ViewResultsPage;
 //   const submitForm = async () => {
 //     try {
 //       let params = { form_id: id };
-//       let res = await axios.post(`${url}api/dashboard/results`, params, {
+//       let res = await axiosAuth.post(`${url}api/dashboard/results`, params, {
 //         headers: {
 //           Authorization: `Bearer ${session?.accessToken}`,
 //         },
