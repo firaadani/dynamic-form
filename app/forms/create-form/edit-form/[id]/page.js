@@ -40,6 +40,7 @@ const EditForm = ({ params }) => {
   // });
 
   const { data: session } = useSession();
+  const role = session?.user?.role;
   const { id } = params;
 
   const url = process.env.NEXT_PUBLIC_BE_URL;
