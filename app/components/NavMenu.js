@@ -4,12 +4,13 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useSession, signIn, signOut, getSession } from "next-auth/react";
 import SideMenu from "./SideMenu";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { titleCase } from "@/lib/helpers";
 import axios from "axios";
 
 function AuthButton() {
   const { data: session, update, status } = useSession();
+  const router = useRouter();
 
   const [currentSession, setCurrentSession] = useState({ exp: session?.exp });
   const [error, setError] = useState(false);
@@ -21,6 +22,9 @@ function AuthButton() {
     };
 
     a();
+    if (!session) {
+      router.push(`/api/auth/signin`);
+    }
 
     return () => {};
   }, []);

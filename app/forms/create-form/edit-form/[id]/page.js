@@ -34,10 +34,10 @@ const EditForm = ({ params }) => {
   // ==================== useWatch ====================
   const formDescValues = Form.useWatch("formDescription", form);
   const sectionValues = Form.useWatch("sections", form);
-  console.log("sectionValues :", {
-    sectionValues,
-    check: sectionValues?.[0]?.questions?.[0]?.description,
-  });
+  // console.log("sectionValues :", {
+  //   sectionValues,
+  //   check: {},
+  // });
 
   const { data: session } = useSession();
   const { id } = params;
@@ -92,7 +92,7 @@ const EditForm = ({ params }) => {
   };
 
   const postSection = async ({ name, data }) => {
-    console.log("name :", { name });
+    // console.log("name :", { name });
     const index = name?.split("-")?.[1];
     const newItem = _.isEmpty(dataForm?.sections?.[index]) ? true : false;
     // console.log("newItem :", { newItem: dataForm?.sections });
@@ -190,22 +190,22 @@ const EditForm = ({ params }) => {
       ? newSubquestion
       : newQuestion;
 
-    console.log("postQuestion called", {
-      name,
-      split: name?.split("-"),
-      sectionIndex,
-      questionIndex,
-      subquestionIndex,
-      subSubquestionIndex,
-      subSubSubquestionIndex,
-      dataForm,
-      data,
-      newQuestion,
-      newSubquestion,
-      newSubSubquestion,
-      newSubSubSubquestion,
-      newItem,
-    });
+    // console.log("postQuestion called", {
+    //   name,
+    //   split: name?.split("-"),
+    //   sectionIndex,
+    //   questionIndex,
+    //   subquestionIndex,
+    //   subSubquestionIndex,
+    //   subSubSubquestionIndex,
+    //   dataForm,
+    //   data,
+    //   newQuestion,
+    //   newSubquestion,
+    //   newSubSubquestion,
+    //   newSubSubSubquestion,
+    //   newItem,
+    // });
 
     try {
       let values = form.getFieldsValue();
@@ -342,17 +342,17 @@ const EditForm = ({ params }) => {
     const subSubquestionIndex = index?.split("-")?.[3];
     const subSubSubquestionIndex = index?.split("-")?.[4];
 
-    console.log(
-      "sectionIndex,questionIndex,subquestionIndex, subSubquestionIndex, subSubSubquestionIndex :",
-      {
-        sectionIndex,
-        questionIndex,
-        subquestionIndex,
-        subSubquestionIndex,
-        subSubSubquestionIndex,
-        dataForm: dataForm?.sections?.[sectionIndex],
-      }
-    );
+    // console.log(
+    //   "sectionIndex,questionIndex,subquestionIndex, subSubquestionIndex, subSubSubquestionIndex :",
+    //   {
+    //     sectionIndex,
+    //     questionIndex,
+    //     subquestionIndex,
+    //     subSubquestionIndex,
+    //     subSubSubquestionIndex,
+    //     dataForm: dataForm?.sections?.[sectionIndex],
+    //   }
+    // );
 
     const questionId = subSubSubquestionIndex
       ? dataForm?.sections?.[sectionIndex]?.questions?.[questionIndex]
@@ -422,7 +422,7 @@ const EditForm = ({ params }) => {
 
   useEffect(() => {
     if (!_.isEmpty(dataForm)) {
-      console.log("dataForm :", { dataForm });
+      // console.log("dataForm :", { dataForm });
       dataForm?.sections?.forEach((item, index) => {
         form.setFields([
           {
@@ -471,7 +471,7 @@ const EditForm = ({ params }) => {
           }
           if (!_.isEmpty(q?.answer_key)) {
             JSON.parse(q?.answer_key)?.forEach((o, oIndex) => {
-              console.log("o :", { o });
+              // console.log("o :", { o });
               form.setFields([
                 {
                   name: [
@@ -490,7 +490,7 @@ const EditForm = ({ params }) => {
           }
           if (!_.isEmpty(q?.sub_question)) {
             q?.sub_question?.forEach((qq, qqIndex) => {
-              console.log("qq :", { qq });
+              // console.log("qq :", { qq });
               form.setFields([
                 {
                   name: [
@@ -553,7 +553,7 @@ const EditForm = ({ params }) => {
               }
               if (!_.isEmpty(qq?.answer_key)) {
                 JSON.parse(qq?.answer_key)?.forEach((o, oIndex) => {
-                  console.log("o :", { o });
+                  // console.log("o :", { o });
                   form.setFields([
                     {
                       name: [
@@ -697,7 +697,7 @@ const EditForm = ({ params }) => {
                       }
                       if (!_.isEmpty(qqq?.answer_key)) {
                         JSON.parse(qqq?.answer_key)?.forEach((o, oIndex) => {
-                          console.log("o :", { o });
+                          // console.log("o :", { o });
                           form.setFields([
                             {
                               name: [
@@ -798,7 +798,7 @@ const EditForm = ({ params }) => {
                           if (!_.isEmpty(qqqq?.answer_key)) {
                             JSON.parse(qqqq?.answer_key)?.forEach(
                               (o, oIndex) => {
-                                console.log("o :", { o });
+                                // console.log("o :", { o });
                                 form.setFields([
                                   {
                                     name: [
@@ -839,7 +839,14 @@ const EditForm = ({ params }) => {
   const questionComponent = ({ sectionField, parent_id }) => {
     const splitted =
       parent_id.toString()?.indexOf("-") === -1 ? null : parent_id?.split("-");
-
+    // console.log("splitted :", {
+    //   splitted,
+    //   sectionField,
+    //   parent_id,
+    //   sectionValues:
+    //     sectionValues?.[sectionField?.name]?.questions?.[parent_id]
+    //       ?.description,
+    // });
     return (
       <Form.List name={[sectionField.name, "questions"]}>
         {(fields, { add, remove }) => (
@@ -908,6 +915,9 @@ const EditForm = ({ params }) => {
                             ?.questions?.[field.name]?.description ?? ""
                         : splitted?.length === 1
                         ? sectionValues?.[splitted[0]]?.questions?.[field.name]
+                            ?.description ?? ""
+                        : splitted === null
+                        ? sectionValues?.[parent_id]?.questions?.[field.name]
                             ?.description ?? ""
                         : ""
                     }
@@ -1501,6 +1511,9 @@ const EditForm = ({ params }) => {
     );
   };
 
+  if (role === "User") {
+    router.push(`/dashboard`);
+  }
   return (
     <div className="bg-white m-20 p-10 rounded-2xl drop-shadow-sm flex flex-col h-[750px] overflow-y-hidden">
       {/* <Button

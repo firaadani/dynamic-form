@@ -330,6 +330,7 @@ const AnswerFormPage = ({ params }) => {
   }, [dataForm]);
 
   const renderQuestion = ({ parent_id, parent, self, index }) => {
+    console.log("parent_id :", { parent_id, self });
     return (
       <Form.Item
         label={self?.question}
@@ -340,6 +341,10 @@ const AnswerFormPage = ({ params }) => {
           current === index ? `border border-1 rounded-2xl p-4` : `hidden`
         }
       >
+        <div
+          className="text-xs text-slate-700 mb-2"
+          dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
+        />
         {self?.type === "Section" ? (
           <>
             {self?.sub_question?.map((child) => {
@@ -493,7 +498,7 @@ const AnswerFormPage = ({ params }) => {
               Previous
             </Button>
           )}
-          <Button
+          {/* <Button
             onClick={() =>
               console.log("form: form.getFieldsValue() :", {
                 form: form.getFieldsValue(),
@@ -501,7 +506,7 @@ const AnswerFormPage = ({ params }) => {
             }
           >
             Check Form
-          </Button>
+          </Button> */}
         </div>
       </div>
     );

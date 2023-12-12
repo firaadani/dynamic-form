@@ -22,6 +22,7 @@ const App = () => {
   const { data: session } = useSession();
   const router = useRouter();
   const axiosAuth = useAxiosAuth();
+  const role = session?.user?.role;
 
   const url = process.env.NEXT_PUBLIC_BE_URL;
 
@@ -44,6 +45,9 @@ const App = () => {
     }
   };
 
+  if (role === "User") {
+    router.push(`/dashboard`);
+  }
   return (
     <div className="bg-white m-20 p-10 rounded-2xl drop-shadow-sm flex flex-col overflow-y-hidden">
       <div className="overflow-y-auto">
