@@ -349,10 +349,12 @@ const AnswerFormPage = ({ params }) => {
         label={
           <div>
             {self?.question}
-            <div
-              className="text-xs text-slate-700 mt-1"
-              dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
-            />
+            {self?.description && (
+              <div
+                className="text-xs text-slate-700 mt-1"
+                dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
+              />
+            )}
           </div>
         }
         // pola nama : question + section.id + question.id
