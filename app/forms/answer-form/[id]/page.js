@@ -22,6 +22,15 @@ import { showError, showSuccess } from "@/lib/helpersClient";
 import { useRouter } from "next/navigation";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
+import dynamic from "next/dynamic";
+
+const CKEditor = dynamic(
+  () => import("@/app/components/CKEditor").then((e) => e.default),
+  {
+    ssr: false,
+  }
+);
+
 const AnswerFormPage = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
   const { data: session } = useSession();
@@ -42,6 +51,7 @@ const AnswerFormPage = ({ params }) => {
     showUploadList: false,
     onChange(info) {
       const { status } = info.file;
+      console.log("info: info.file :", { info: info.file });
       if (status !== "uploading") {
         console.log(info.file, info.fileList);
       }
@@ -56,13 +66,13 @@ const AnswerFormPage = ({ params }) => {
     },
     // beforeUpload: (file) => {
     //   setFileList([...fileList, file]);
-    //   return false;
+    //   // return false;
     // },
   };
 
   const customRequest = async ({ file, qId }) => {
     console.log("file, onSuccess, onError :", {
-      file,
+      file: typeof file,
       qId,
     });
     // You can customize the payload here
@@ -204,9 +214,12 @@ const AnswerFormPage = ({ params }) => {
     if (!_.isEmpty(dataForm)) {
       console.log("dataForm :", { dataForm });
       dataForm?.sections?.map((item, index) => {
+        console.log("dataform sections item :", { item });
         item?.questions?.map((q, qIndex) => {
-          console.log("q :", { q });
-
+          console.log("dataform sections item q :", {
+            q,
+            answer: q?.answers?.[0]?.answer,
+          });
           if (
             isDateValid(q?.answers?.[0]?.answer) ||
             isValidTime(q?.answers?.[0]?.answer)
@@ -368,10 +381,16 @@ const AnswerFormPage = ({ params }) => {
           />
         ) : null}
         {self?.type === "Paragraph" ? (
-          <TextArea
-            onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
+          <CKEditor
+            name={`formDescription`}
+            onBlur={postAnswer}
+            caller={`answer-${self.id}`}
+            // initVal={formDescValues ?? ""}
           />
-        ) : null}
+        ) : // <TextArea
+        //   onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
+        // />
+        null}
         {self?.type === "Multiple Choice" ? (
           <Radio.Group>
             {self?.option &&
@@ -450,7 +469,7 @@ const AnswerFormPage = ({ params }) => {
         ) : null}
         {self?.type === "Time" ? (
           <TimePicker
-            onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
+            onBlur={(e) => postAnswer({ answer: answer, id: self.id })}
           />
         ) : null}
       </Form.Item>
@@ -481,23 +500,14 @@ const AnswerFormPage = ({ params }) => {
             });
           })}
         </Form>
-        <div className="flex gap-4 mt-10">
-          {current < steps.length - 1 && (
-            <Button onClick={() => next()}>Next</Button>
-          )}
-          {current === steps.length - 1 && (
-            <Button onClick={() => setIsModalOpen(true)}>Submit</Button>
-          )}
-          {current > 0 && (
-            <Button
-              style={{
-                margin: "0 8px",
-              }}
-              onClick={() => prev()}
-            >
-              Previous
-            </Button>
-          )}
+        <div className="flex justify-between mt-10">
+          <Button onClick={() => prev()} disabled={current <= 0}>
+            Previous
+          </Button>
+          <Button disabled={current >= steps.length - 1} onClick={() => next()}>
+            Next
+          </Button>
+
           {/* <Button
             onClick={() =>
               console.log("form: form.getFieldsValue() :", {
@@ -508,6 +518,15 @@ const AnswerFormPage = ({ params }) => {
             Check Form
           </Button> */}
         </div>
+
+        {current === steps.length - 1 && (
+          <Button
+            onClick={() => setIsModalOpen(true)}
+            className="mt-10 w-full bg-indigo-500 text-white"
+          >
+            Submit
+          </Button>
+        )}
       </div>
     );
   } else {

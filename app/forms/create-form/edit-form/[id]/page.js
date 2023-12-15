@@ -17,6 +17,7 @@ import dynamic from "next/dynamic";
 import _ from "lodash";
 import { useSession } from "next-auth/react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
+import { useRouter } from "next/navigation";
 
 // ==================== USEWATCH ====================
 
@@ -30,6 +31,7 @@ const CKEditor = dynamic(
 const EditForm = ({ params }) => {
   const [form] = Form.useForm();
   const axiosAuth = useAxiosAuth();
+  const router = useRouter();
 
   // ==================== useWatch ====================
   const formDescValues = Form.useWatch("formDescription", form);
