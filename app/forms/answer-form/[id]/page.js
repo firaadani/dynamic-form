@@ -346,12 +346,14 @@ const AnswerFormPage = ({ params }) => {
   const renderQuestion = ({ parent_id, parent, self, index }) => {
     return (
       <Form.Item
-        label={self?.question}
-        extra={
-          <div
-            className="text-xs text-slate-700 mt-2"
-            dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
-          />
+        label={
+          <div>
+            {self?.question}
+            <div
+              className="text-xs text-slate-700 mt-1"
+              dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
+            />
+          </div>
         }
         // pola nama : question + section.id + question.id
         name={`question-${parent_id}-${self?.id}`}
