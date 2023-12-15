@@ -228,7 +228,9 @@ const AnswerFormPage = ({ params }) => {
             form.setFields([
               {
                 name: `question-${item?.id}-${q?.id}`,
-                value: moment(q?.answers?.[0]?.answer),
+                value: isValidTime(q?.answers?.[0]?.answer)
+                  ? moment(q?.answers?.[0]?.answer, "HH:mm:ss")
+                  : moment(q?.answers?.[0]?.answer),
               },
             ]);
           } else {
@@ -458,6 +460,7 @@ const AnswerFormPage = ({ params }) => {
             </Dragger>
             {!_.isEmpty(self?.answers?.[0]?.answer) ? (
               <a
+                className="text-indigo-500 underline"
                 href={
                   url + self?.answers?.[0]?.answer?.replace("public", "storage")
                 }
@@ -514,7 +517,7 @@ const AnswerFormPage = ({ params }) => {
             Next
           </Button>
 
-          {/* <Button
+          <Button
             onClick={() =>
               console.log("form: form.getFieldsValue() :", {
                 form: form.getFieldsValue(),
@@ -522,7 +525,7 @@ const AnswerFormPage = ({ params }) => {
             }
           >
             Check Form
-          </Button> */}
+          </Button>
         </div>
 
         {current === steps.length - 1 && (
