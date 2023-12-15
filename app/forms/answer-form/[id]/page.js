@@ -391,7 +391,7 @@ const AnswerFormPage = ({ params }) => {
             name={`formDescription`}
             onBlur={postAnswer}
             caller={`answer-${self.id}`}
-            // initVal={formDescValues ?? ""}
+            initVal={self?.answers?.[0]?.answer ?? ""}
           />
         ) : // <TextArea
         //   onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
