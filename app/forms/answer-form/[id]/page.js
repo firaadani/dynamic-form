@@ -212,14 +212,15 @@ const AnswerFormPage = ({ params }) => {
 
   useEffect(() => {
     if (!_.isEmpty(dataForm)) {
-      console.log("dataForm :", { dataForm });
+      // console.log("dataForm :", { dataForm });
       dataForm?.sections?.map((item, index) => {
-        console.log("dataform sections item :", { item });
+        // // console.log("dataform sections item :", { item });
         item?.questions?.map((q, qIndex) => {
-          console.log("dataform sections item q :", {
-            q,
-            answer: q?.answers?.[0]?.answer,
-          });
+          // console.log("dataform sections item q :", {
+          //   q,
+          //   answer: q?.answers?.[0]?.answer,
+          //   name: `question-${item?.id}-${q?.id}`,
+          // });
           if (
             isDateValid(q?.answers?.[0]?.answer) ||
             isValidTime(q?.answers?.[0]?.answer)
@@ -343,10 +344,15 @@ const AnswerFormPage = ({ params }) => {
   }, [dataForm]);
 
   const renderQuestion = ({ parent_id, parent, self, index }) => {
-    console.log("parent_id :", { parent_id, self });
     return (
       <Form.Item
         label={self?.question}
+        extra={
+          <div
+            className="text-xs text-slate-700 mt-2"
+            dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
+          />
+        }
         // pola nama : question + section.id + question.id
         name={`question-${parent_id}-${self?.id}`}
         key={self?.id}
@@ -354,10 +360,6 @@ const AnswerFormPage = ({ params }) => {
           current === index ? `border border-1 rounded-2xl p-4` : `hidden`
         }
       >
-        <div
-          className="text-xs text-slate-700 mb-2"
-          dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
-        />
         {self?.type === "Section" ? (
           <>
             {self?.sub_question?.map((child) => {
