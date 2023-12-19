@@ -168,8 +168,11 @@ const UserManagementPage = () => {
           formData
         );
         console.log("res :", { res });
-        if (res?.status === 201) {
-          showSuccess("Berhasil", "Berhasil menambahkan User");
+        if (res?.status === 201 || res?.status === 200) {
+          showSuccess(
+            "Berhasil",
+            `Berhasil ${isEdit ? "mengedit" : "menambahkan"} User`
+          );
           form.resetFields();
           setIsModalOpen(false);
           setRefresh((prev) => !prev);
