@@ -33,7 +33,7 @@ const EditorComponent = ({ name, onBlur, initVal, caller }) => {
       }}
       onBlur={(event, editor) => {
         console.log("Blur.", editor, data);
-        if (caller.includes("answer")) {
+        if (caller?.includes("answer")) {
           onBlur({ answer: data, id: caller.split("-")?.[1] });
         } else {
           onBlur({ name: name, wsiwygdata: data });
