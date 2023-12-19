@@ -7,6 +7,7 @@ import {
   Input,
   Modal,
   Popconfirm,
+  Select,
   Table,
   Tooltip,
   message,
@@ -252,7 +253,22 @@ const UserManagementPage = () => {
               },
             ]}
           >
-            <Input />
+            <Select
+              options={[
+                {
+                  label: "Super Admin",
+                  value: "SuperAdmin",
+                },
+                {
+                  label: "Admin",
+                  value: "Admin",
+                },
+                {
+                  label: "User",
+                  value: "User",
+                },
+              ]}
+            />
           </Form.Item>
           <Form.Item
             label="Password"

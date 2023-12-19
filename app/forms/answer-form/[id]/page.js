@@ -199,7 +199,7 @@ const AnswerFormPage = ({ params }) => {
   const prev = () => {
     setCurrent(current - 1);
   };
-  const items = steps.map((item, index) => ({
+  const items = steps?.map((item, index) => ({
     key: item.index,
     title: item.title,
   }));
