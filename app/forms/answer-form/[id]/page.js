@@ -393,7 +393,11 @@ const AnswerFormPage = ({ params }) => {
             name={`formDescription`}
             onBlur={postAnswer}
             caller={`answer-${self.id}`}
-            initVal={self?.answers?.[0]?.answer ?? ""}
+            initVal={
+              self?.answers?.[0]?.answer === null
+                ? ""
+                : self?.answers?.[0]?.answer ?? ""
+            }
           />
         ) : // <TextArea
         //   onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
@@ -517,7 +521,7 @@ const AnswerFormPage = ({ params }) => {
             Next
           </Button>
 
-          <Button
+          {/* <Button
             onClick={() =>
               console.log("form: form.getFieldsValue() :", {
                 form: form.getFieldsValue(),
@@ -525,7 +529,7 @@ const AnswerFormPage = ({ params }) => {
             }
           >
             Check Form
-          </Button>
+          </Button> */}
         </div>
 
         {current === steps.length - 1 && (
