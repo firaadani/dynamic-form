@@ -482,7 +482,7 @@ const AnswerFormPage = ({ params }) => {
         ) : null}
         {self?.type === "Time" ? (
           <TimePicker
-            onBlur={(e) => postAnswer({ answer: answer, id: self.id })}
+            onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
           />
         ) : null}
       </Form.Item>
