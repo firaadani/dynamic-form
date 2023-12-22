@@ -14,6 +14,7 @@ const ResultsPage = () => {
   const router = useRouter();
   const { data: session } = useSession();
   const axiosAuth = useAxiosAuth();
+  const role = session?.user?.role;
 
   const [selectedData, setSelectedData] = useState({});
 
@@ -45,7 +46,15 @@ const ResultsPage = () => {
             > */}
             <Tooltip title="View Form" className="cursor-pointer">
               <EyeOutlined
-                onClick={() => router.push(`/forms/results/${item?.id}`)}
+                onClick={() => {
+                  if (role === "User") {
+                    router.push(
+                      `/forms/results/${item?.form_id}/view/${item?.user_id}`
+                    );
+                  } else {
+                    router.push(`/forms/results/${item?.form_id}`);
+                  }
+                }}
               />
             </Tooltip>
             {/* </Popconfirm> */}
@@ -62,17 +71,14 @@ const ResultsPage = () => {
       let params = {
         page: page,
         row: pageSize,
-        include: "results",
+        include: "forms",
       };
-      let res = await axiosAuth.get(`api/dashboard/forms`, {
+      let res = await axiosAuth.get(`api/dashboard/results`, {
         params,
       });
       // console.log("res :", { res });
       if (res.status === 200 || res?.data?.meta?.status === true) {
-        let withResults = res?.data?.data?.data
-          ?.map((item) => (_.isEmpty(item?.results) ? null : item))
-          .filter(Boolean);
-        setData({ ...res?.data?.data, data: withResults });
+        setData(res?.data?.data);
         // console.log("data :", { res: res?.data?.data, withResults });
       }
     } catch (error) {

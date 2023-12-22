@@ -11,13 +11,19 @@ export const formResultColumns = [
   },
   {
     title: "Form Name",
-    dataIndex: "title",
+    dataIndex: "forms",
     key: "title",
+    render: (value) => {
+      return <p>{value?.title}</p>;
+    },
   },
   {
     title: "Access",
-    dataIndex: "access",
+    dataIndex: "forms",
     key: "access",
+    render: (value) => {
+      return <p>{value?.access}</p>;
+    },
   },
 ];
 

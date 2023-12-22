@@ -11,6 +11,7 @@ const ViewResultsPage = ({ params }) => {
   const pathname = usePathname();
   const form_id = pathname?.split("/")?.[3];
   const { id } = params;
+  // console.log("id :", { id, pathname:  });
   const url = process.env.NEXT_PUBLIC_BE_URL;
   const axiosAuth = useAxiosAuth();
 
@@ -22,9 +23,8 @@ const ViewResultsPage = ({ params }) => {
   const getAnswersById = async () => {
     try {
       let params = {
-        include:
-          "sections.questions.answers,sections.questions.subQuestion.answers,sections.questions.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.answers,sections.questions.subQuestion.subQuestion.subQuestion.subQuestion.answers,users",
-        user_id: id,
+        include: "results.users",
+        user_id: pathname?.split("view/")?.[1],
       };
       let res = await axiosAuth.get(`${url}api/dashboard/forms/${form_id}`, {
         params,
@@ -161,7 +161,8 @@ const ViewResultsPage = ({ params }) => {
     <div className="m-4 p-10 bg-white rounded-xl drop-shadow-sm flex flex-col gap-4">
       <p>Form {data?.title}</p>
       <p className="mb-10">
-        Answered by: {data?.users?.name} ({data?.users?.username})
+        Answered by: {data?.results?.[0]?.users?.name} (
+        {data?.results?.[0]?.users?.username})
       </p>
 
       {data?.sections?.map((item, index) => {
