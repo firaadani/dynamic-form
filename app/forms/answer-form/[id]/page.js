@@ -216,11 +216,19 @@ const AnswerFormPage = ({ params }) => {
       dataForm?.sections?.map((item, index) => {
         // // console.log("dataform sections item :", { item });
         item?.questions?.map((q, qIndex) => {
-          // console.log("dataform sections item q :", {
-          //   q,
-          //   answer: q?.answers?.[0]?.answer,
-          //   name: `question-${item?.id}-${q?.id}`,
-          // });
+          console.log("dataform sections item q :", {
+            q,
+            answer:
+              isJsonString(q?.answers?.[0]?.answer) &&
+              _.isArray(JSON.parse(q?.answers?.[0]?.answer))
+                ? JSON.parse(q?.answers?.[0]?.answer)?.map(
+                    (item) => item.option
+                  )
+                : isJsonString(q?.answers?.[0]?.answer)
+                ? JSON.parse(q?.answers?.[0]?.answer)?.option
+                : q?.answers?.[0]?.answer,
+            name: `question-${item?.id}-${q?.id}`,
+          });
           if (
             isDateValid(q?.answers?.[0]?.answer) ||
             isValidTime(q?.answers?.[0]?.answer)
@@ -237,7 +245,15 @@ const AnswerFormPage = ({ params }) => {
             form.setFields([
               {
                 name: `question-${item?.id}-${q?.id}`,
-                value: q?.answers?.[0]?.answer,
+                value:
+                  isJsonString(q?.answers?.[0]?.answer) &&
+                  _.isArray(JSON.parse(q?.answers?.[0]?.answer))
+                    ? JSON.parse(q?.answers?.[0]?.answer)?.map(
+                        (item) => item.option
+                      )
+                    : isJsonString(q?.answers?.[0]?.answer)
+                    ? JSON.parse(q?.answers?.[0]?.answer)?.option
+                    : q?.answers?.[0]?.answer,
               },
             ]);
           }
@@ -485,6 +501,29 @@ const AnswerFormPage = ({ params }) => {
             onBlur={(e) => postAnswer({ answer: e.target.value, id: self.id })}
           />
         ) : null}
+        {self?.type === "Linear Scale" ? (
+          <Radio.Group>
+            {self?.option &&
+              JSON.parse(self?.option)?.options?.map((item) => {
+                // console.log("item :", { item });
+                return (
+                  <Radio
+                    onBlur={(e) => {
+                      let answer = { option: e?.target?.value };
+                      postAnswer({
+                        answer: JSON.stringify(answer),
+                        id: self.id,
+                      });
+                      console.log("blur :", { e: e?.target?.value });
+                    }}
+                    value={item?.option?.toString()}
+                  >
+                    {item?.option}
+                  </Radio>
+                );
+              })}
+          </Radio.Group>
+        ) : null}
       </Form.Item>
     );
   };
@@ -521,7 +560,7 @@ const AnswerFormPage = ({ params }) => {
             Next
           </Button>
 
-          {/* <Button
+          <Button
             onClick={() =>
               console.log("form: form.getFieldsValue() :", {
                 form: form.getFieldsValue(),
@@ -529,7 +568,7 @@ const AnswerFormPage = ({ params }) => {
             }
           >
             Check Form
-          </Button> */}
+          </Button>
         </div>
 
         {current === steps.length - 1 && (

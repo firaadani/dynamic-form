@@ -18,6 +18,7 @@ import _ from "lodash";
 import { useSession } from "next-auth/react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useRouter } from "next/navigation";
+import FormLinear from "@/app/components/FormLinear";
 
 // ==================== USEWATCH ====================
 
@@ -30,6 +31,7 @@ const CKEditor = dynamic(
 );
 const EditForm = ({ params }) => {
   const [form] = Form.useForm();
+
   const axiosAuth = useAxiosAuth();
   const router = useRouter();
 
@@ -453,7 +455,8 @@ const EditForm = ({ params }) => {
               value: q?.type,
             },
           ]);
-          if (!_.isEmpty(q?.option)) {
+
+          if (q?.type !== "Linear Scale" && !_.isEmpty(q?.option)) {
             JSON.parse(q?.option)?.forEach((o, oIndex) => {
               // console.log("o :", { o });
               form.setFields([
@@ -960,11 +963,16 @@ const EditForm = ({ params }) => {
                         value: "Checkboxes",
                       },
                       {
+                        label: "Checkboxes with Leveling",
+                        value: "Checkboxes with Leveling",
+                      },
+                      {
                         label: "File Upload",
                         value: "File Upload",
                       },
                       { label: "Date", value: "Date" },
                       { label: "Time", value: "Time" },
+                      { label: "Linear Scale", value: "Linear Scale" },
                     ]}
                   />
                 </Form.Item>
@@ -1492,6 +1500,23 @@ const EditForm = ({ params }) => {
                     })
                   : null}
 
+                {splitted === null &&
+                sectionValues?.[sectionField.name]?.questions?.[field.name]
+                  ?.type === `Linear Scale` ? (
+                  <FormLinear
+                    question_id={
+                      dataForm?.sections?.[sectionField?.name]?.questions?.[
+                        field.name
+                      ]?.id
+                    }
+                    oldData={
+                      dataForm?.sections?.[sectionField?.name]?.questions?.[
+                        field.name
+                      ]
+                    }
+                  />
+                ) : null}
+
                 {/* <Form.Item
                   label="Answer Key"
                   name={[field.name, "answer_key"]}
@@ -1504,6 +1529,14 @@ const EditForm = ({ params }) => {
                 </Form.Item> */}
               </Card>
             ))}
+
+            <Button
+              onClick={() =>
+                console.log("formLinear ", formLinear.getFieldsValue())
+              }
+            >
+              check
+            </Button>
 
             <Button type="dashed" onClick={() => add()} block>
               + Add Question
@@ -1607,6 +1640,14 @@ const EditForm = ({ params }) => {
               </div>
             )}
           </Form.List>
+
+          <Button
+            type="dashed"
+            onClick={() => console.log(form.getFieldsValue())}
+            block
+          >
+            Check
+          </Button>
 
           <Form.Item noStyle shouldUpdate>
             {() => (
