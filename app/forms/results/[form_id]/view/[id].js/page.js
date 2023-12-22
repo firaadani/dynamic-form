@@ -144,6 +144,16 @@ const ViewResultsPage = ({ params }) => {
             </div>
           </div>
         );
+      } else if (self?.type === "Paragraph") {
+        return (
+          <div key={index}>
+            <p className="my-2">{self?.question}</p>
+            <div
+              className="bg-indigo-300 w-full rounded-md px-3 py-1"
+              dangerouslySetInnerHTML={{ __html: answer }}
+            ></div>
+          </div>
+        );
       } else {
         return (
           <div key={index}>
