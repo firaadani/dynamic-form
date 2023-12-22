@@ -50,6 +50,7 @@ const EditForm = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
 
   const [dataForm, setDataForm] = useState({});
+  console.log("dataForm :", { dataForm });
 
   const getFormById = async () => {
     try {
@@ -456,7 +457,10 @@ const EditForm = ({ params }) => {
             },
           ]);
 
-          if (q?.type !== "Linear Scale" && !_.isEmpty(q?.option)) {
+          if (
+            ["Multiple Choice", "Checkbox"].includes(q?.type) &&
+            !_.isEmpty(q?.option)
+          ) {
             JSON.parse(q?.option)?.forEach((o, oIndex) => {
               // console.log("o :", { o });
               form.setFields([
@@ -536,7 +540,10 @@ const EditForm = ({ params }) => {
                   value: qq?.type,
                 },
               ]);
-              if (!_.isEmpty(qq?.option)) {
+              if (
+                ["Multiple Choice", "Checkbox"].includes(qq?.type) &&
+                !_.isEmpty(qq?.option)
+              ) {
                 JSON.parse(qq?.option)?.forEach((o, oIndex) => {
                   // console.log("o :", { o });
                   form.setFields([
@@ -678,7 +685,10 @@ const EditForm = ({ params }) => {
                           value: qqqq?.type,
                         },
                       ]);
-                      if (!_.isEmpty(qqq?.option)) {
+                      if (
+                        ["Multiple Choice", "Checkbox"].includes(qqq?.type) &&
+                        !_.isEmpty(qqq?.option)
+                      ) {
                         JSON.parse(qqq?.option)?.forEach((o, oIndex) => {
                           // console.log("o :", { o });
                           form.setFields([
@@ -776,7 +786,12 @@ const EditForm = ({ params }) => {
                               value: qqqq?.type,
                             },
                           ]);
-                          if (!_.isEmpty(qqqq?.option)) {
+                          if (
+                            ["Multiple Choice", "Checkbox"].includes(
+                              qqqq?.type
+                            ) &&
+                            !_.isEmpty(qqqq?.option)
+                          ) {
                             JSON.parse(qqqq?.option)?.forEach((o, oIndex) => {
                               // console.log("o :", { o });
                               form.setFields([
@@ -845,14 +860,19 @@ const EditForm = ({ params }) => {
   const questionComponent = ({ sectionField, parent_id }) => {
     const splitted =
       parent_id.toString()?.indexOf("-") === -1 ? null : parent_id?.split("-");
-    // console.log("splitted :", {
-    //   splitted,
-    //   sectionField,
-    //   parent_id,
-    //   sectionValues:
-    //     sectionValues?.[sectionField?.name]?.questions?.[parent_id]
-    //       ?.description,
-    // });
+    console.log("splitted :", {
+      splitted,
+      sectionField,
+      parent_id,
+      sectionValues: splitted
+        ? dataForm?.sections?.[splitted[0]]?.questions?.[splitted[1]]
+            ?.sub_question?.[splitted[2]]?.sub_question?.[0]
+        : null,
+      dataForm: splitted
+        ? dataForm?.sections?.[splitted[0]]?.questions?.[splitted[1]]
+            ?.sub_question
+        : null,
+    });
     return (
       <Form.List name={[sectionField.name, "questions"]}>
         {(fields, { add, remove }) => (
@@ -1516,7 +1536,61 @@ const EditForm = ({ params }) => {
                     }
                   />
                 ) : null}
-
+                {splitted?.length === 2 &&
+                sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                  ?.questions?.[field.name]?.type === `Linear Scale` ? (
+                  <FormLinear
+                    question_id={
+                      dataForm?.sections?.[splitted[0]]?.questions?.[
+                        splitted[1]
+                      ]?.sub_question?.[field?.name]?.id
+                    }
+                    oldData={
+                      dataForm?.sections?.[splitted[0]]?.questions?.[
+                        splitted[1]
+                      ]?.sub_question?.[field?.name]
+                    }
+                  />
+                ) : null}
+                {splitted?.length === 3 &&
+                sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                  ?.questions?.[splitted[2]]?.questions?.[field.name]?.type ===
+                  `Linear Scale` ? (
+                  <FormLinear
+                    question_id={
+                      dataForm?.sections?.[splitted[0]]?.questions?.[
+                        splitted[1]
+                      ]?.sub_question?.[splitted[2]]?.sub_question?.[field.name]
+                        ?.id
+                    }
+                    oldData={
+                      dataForm?.sections?.[splitted[0]]?.questions?.[
+                        splitted[1]
+                      ]?.sub_question?.[splitted[2]]?.sub_question?.[field.name]
+                    }
+                  />
+                ) : null}
+                {splitted?.length === 4 &&
+                sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
+                  ?.questions?.[splitted[2]]?.questions?.[splitted[3]]
+                  ?.questions?.[field.name]?.type === `Linear Scale` ? (
+                  <FormLinear
+                    question_id={
+                      dataForm?.sections?.[splitted[0]]?.questions?.[
+                        splitted[1]
+                      ]?.sub_question?.[splitted[2]]?.sub_question?.[
+                        splitted[3]
+                      ]?.sub_question?.[field.name]?.id
+                    }
+                    oldData={
+                      dataForm?.sections?.[splitted[0]]?.questions?.[
+                        splitted[1]
+                      ]?.sub_question?.[splitted[2]]?.sub_question?.[
+                        splitted[3]
+                      ]?.sub_question?.[field.name]
+                    }
+                  />
+                ) : null}
                 {/* <Form.Item
                   label="Answer Key"
                   name={[field.name, "answer_key"]}
@@ -1529,14 +1603,6 @@ const EditForm = ({ params }) => {
                 </Form.Item> */}
               </Card>
             ))}
-
-            <Button
-              onClick={() =>
-                console.log("formLinear ", formLinear.getFieldsValue())
-              }
-            >
-              check
-            </Button>
 
             <Button type="dashed" onClick={() => add()} block>
               + Add Question
