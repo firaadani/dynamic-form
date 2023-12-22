@@ -50,7 +50,7 @@ const EditForm = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
 
   const [dataForm, setDataForm] = useState({});
-  console.log("dataForm :", { dataForm });
+  // console.log("dataForm :", { dataForm });
 
   const getFormById = async () => {
     try {
@@ -860,19 +860,19 @@ const EditForm = ({ params }) => {
   const questionComponent = ({ sectionField, parent_id }) => {
     const splitted =
       parent_id.toString()?.indexOf("-") === -1 ? null : parent_id?.split("-");
-    console.log("splitted :", {
-      splitted,
-      sectionField,
-      parent_id,
-      sectionValues: splitted
-        ? dataForm?.sections?.[splitted[0]]?.questions?.[splitted[1]]
-            ?.sub_question?.[splitted[2]]?.sub_question?.[0]
-        : null,
-      dataForm: splitted
-        ? dataForm?.sections?.[splitted[0]]?.questions?.[splitted[1]]
-            ?.sub_question
-        : null,
-    });
+    // console.log("splitted :", {
+    //   splitted,
+    //   sectionField,
+    //   parent_id,
+    //   sectionValues: splitted
+    //     ? dataForm?.sections?.[splitted[0]]?.questions?.[splitted[1]]
+    //         ?.sub_question?.[splitted[2]]?.sub_question?.[0]
+    //     : null,
+    //   dataForm: splitted
+    //     ? dataForm?.sections?.[splitted[0]]?.questions?.[splitted[1]]
+    //         ?.sub_question
+    //     : null,
+    // });
     return (
       <Form.List name={[sectionField.name, "questions"]}>
         {(fields, { add, remove }) => (

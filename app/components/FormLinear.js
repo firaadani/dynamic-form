@@ -30,7 +30,7 @@ const FormLinear = ({ question_id, oldData }) => {
   };
 
   useEffect(() => {
-    console.log("oldData?.option :", { oldData, question_id });
+    // console.log("oldData?.option :", { oldData, question_id });
     if (oldData?.option) {
       let parsed = JSON.parse(oldData?.option);
       formLinear.setFields([
