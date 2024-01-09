@@ -19,6 +19,7 @@ import { useSession } from "next-auth/react";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 import { useRouter } from "next/navigation";
 import FormLinear from "@/app/components/FormLinear";
+import { showSuccess } from "@/lib/helpersClient";
 
 // ==================== USEWATCH ====================
 
@@ -50,8 +51,50 @@ const EditForm = ({ params }) => {
   const url = process.env.NEXT_PUBLIC_BE_URL;
 
   const [dataForm, setDataForm] = useState({});
+  const [appraiserList, setAppraiserList] = useState([]);
+  const [appraiseeList, setAppraiseeList] = useState([]);
+  const [userList, setUserList] = useState([]);
+
   // console.log("dataForm :", { dataForm });
 
+  const getUsers = async () => {
+    try {
+      let res = await axiosAuth.get(`api/dashboard/users`);
+      if (res?.status === 200) {
+        setUserList(
+          res?.data?.data?.data?.map((item) => ({
+            ...item,
+            label: item?.name,
+            value: item?.id,
+          }))
+        );
+      }
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+
+  const getAppraisersByFormId = async () => {
+    try {
+      let res = await axiosAuth.get(`api/dashboard/appraisers/${id}`);
+      if (res?.status === 200) {
+        setAppraiserList(res?.data?.data);
+      }
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+
+  const getAppraiseesByFormId = async () => {
+    try {
+      let res = await axiosAuth.get(`api/dashboard/appraiseds/${id}`);
+      if (res?.status === 200) {
+        setAppraiseeList(res?.data?.data);
+      }
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
   const getFormById = async () => {
     try {
       let res = await axiosAuth.get(
@@ -66,6 +109,64 @@ const EditForm = ({ params }) => {
         setDataForm(res?.data?.data);
         form.setFieldValue("formTitle", res?.data?.data?.title);
         form.setFieldValue("formDescription", res?.data?.data?.description);
+      }
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+
+  const postAppraisers = async ({ userId, formId }) => {
+    try {
+      let params = {
+        user_id: userId,
+        form_id: formId,
+      };
+      let res = await axiosAuth.post(`api/dashboard/appraisers`, params);
+      if (res?.status === 201) {
+        showSuccess("Berhasil", "Berhasil menambah appraiser");
+        getAppraisersByFormId();
+      }
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+  const deleteAppraisers = async ({ appraiserId }) => {
+    try {
+      let res = await axiosAuth.delete(
+        `api/dashboard/appraisers/${appraiserId}`
+      );
+      if (res?.status === 200) {
+        showSuccess("Berhasil", "Berhasil menghapus appraiser");
+        getAppraisersByFormId();
+      }
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+
+  const postAppraisees = async ({ userId, formId }) => {
+    try {
+      let params = {
+        user_id: userId,
+        form_id: formId,
+      };
+      let res = await axiosAuth.post(`api/dashboard/appraiseds`, params);
+      if (res?.status === 201) {
+        showSuccess("Berhasil", "Berhasil menambah appraiser");
+        getAppraiseesByFormId();
+      }
+    } catch (error) {
+      console.log("error :", { error });
+    }
+  };
+  const deleteAppraisees = async ({ appraiseeId }) => {
+    try {
+      let res = await axiosAuth.delete(
+        `api/dashboard/appraiseds/${appraiseeId}`
+      );
+      if (res?.status === 200) {
+        showSuccess("Berhasil", "Berhasil menghapus appraiser");
+        getAppraiseesByFormId();
       }
     } catch (error) {
       console.log("error :", { error });
@@ -419,9 +520,49 @@ const EditForm = ({ params }) => {
     }
   };
 
+  const handleAppraiserChange = (a) => {
+    // Filter out the values that were already selected
+    let appraisers = appraiserList?.map((item) => item?.user_id);
+    const newValues = a.filter((value) => !appraisers.includes(value));
+
+    // Filter out the values that were removed (deleted)
+    const deletedValues = appraisers.filter((value) => !a.includes(value));
+    const itemToDelete = appraiserList?.filter(
+      (item) => item?.user_id === deletedValues[0]
+    );
+
+    if (!_.isEmpty(newValues)) {
+      postAppraisers({ userId: newValues?.[0], formId: id });
+    }
+    if (!_.isEmpty(deletedValues)) {
+      deleteAppraisers({ appraiserId: itemToDelete?.[0]?.id });
+    }
+  };
+
+  const handleAppraiseeChange = (a) => {
+    let appraisees = appraiseeList?.map((item) => item?.user_id);
+    const newValues = a.filter((value) => !appraisees.includes(value));
+
+    // Filter out the values that were removed (deleted)
+    const deletedValues = appraisees.filter((value) => !a.includes(value));
+    const itemToDelete = appraiseeList?.filter(
+      (item) => item?.user_id === deletedValues[0]
+    );
+
+    if (!_.isEmpty(newValues)) {
+      postAppraisees({ userId: newValues?.[0], formId: id });
+    }
+    if (!_.isEmpty(deletedValues)) {
+      deleteAppraisees({ appraiseeId: itemToDelete?.[0]?.id });
+    }
+  };
+
   // ==================== EFFECTS ====================
   useEffect(() => {
     getFormById();
+    getAppraisersByFormId();
+    getAppraiseesByFormId();
+    getUsers();
 
     return () => {};
   }, []);
@@ -856,6 +997,45 @@ const EditForm = ({ params }) => {
     }
     return () => {};
   }, [dataForm]);
+
+  useEffect(() => {
+    if (!_.isEmpty(appraiserList)) {
+      let appraisers = appraiserList?.map((item) => {
+        return item?.user_id;
+      });
+
+      form.setFields([
+        {
+          name: "appraiser",
+          value: appraisers,
+        },
+      ]);
+    }
+    if (!_.isEmpty(appraiseeList)) {
+      let appraisees = appraiseeList?.map((item) => {
+        return item?.user_id;
+      });
+      form.setFields([
+        {
+          name: "appraisee",
+          value: [],
+        },
+      ]);
+      form.setFields([
+        {
+          name: "appraisee",
+          value: appraisees,
+        },
+      ]);
+    }
+
+    console.log("appraiserList, appraiseeList :", {
+      appraiserList,
+      appraiseeList,
+    });
+
+    return () => {};
+  }, [appraiserList, appraiseeList]);
 
   const questionComponent = ({ sectionField, parent_id }) => {
     const splitted =
@@ -1648,6 +1828,38 @@ const EditForm = ({ params }) => {
               initVal={formDescValues ?? ""}
             />
           </Form.Item>
+          {appraiserList && (
+            <Form.Item label="Appraiser(s)" name={"appraiser"}>
+              <Select
+                options={userList}
+                mode="multiple"
+                name={`appraiser`}
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                onChange={handleAppraiserChange}
+                initVal={formDescValues ?? ""}
+              />
+            </Form.Item>
+          )}
+          {appraiseeList && (
+            <Form.Item label="Appraisee(s)" name={"appraisee"}>
+              <Select
+                options={userList}
+                mode="multiple"
+                name={`appraisee`}
+                filterOption={(input, option) => {
+                  return (
+                    option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                  );
+                }}
+                onChange={handleAppraiseeChange}
+                initVal={formDescValues ?? ""}
+              />
+            </Form.Item>
+          )}
           <Form.List name="sections">
             {(sectionFields, { add: addSection, remove: removeSection }) => (
               <div

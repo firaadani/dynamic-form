@@ -55,7 +55,7 @@ const App = () => {
       };
       let res = await axiosAuth.post(`api/dashboard/appraisers`, params);
       if (res?.status === 201) {
-        showSuccess("Berhasil", "Berhasil menambah appraiser");
+        // showSuccess("Berhasil", "Berhasil menambah appraiser");
       }
     } catch (error) {
       console.log("error :", { error });
@@ -69,7 +69,7 @@ const App = () => {
       };
       let res = await axiosAuth.post(`api/dashboard/appraiseds`, params);
       if (res?.status === 201) {
-        showSuccess("Berhasil", "Berhasil menambah appraisees");
+        // showSuccess("Berhasil", "Berhasil menambah appraisees");
       }
     } catch (error) {
       console.log("error :", { error });
