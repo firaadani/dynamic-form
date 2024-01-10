@@ -23,6 +23,7 @@ import { useRouter } from "next/navigation";
 import useAxiosAuth from "@/lib/hooks/useAxiosAuth";
 
 import dynamic from "next/dynamic";
+import CheckboxWithLeveling from "@/app/components/CheckboxWithLeveling";
 
 const CKEditor = dynamic(
   () => import("@/app/components/CKEditor").then((e) => e.default),
@@ -222,7 +223,7 @@ const AnswerFormPage = ({ params }) => {
               isJsonString(q?.answers?.[0]?.answer) &&
               _.isArray(JSON.parse(q?.answers?.[0]?.answer))
                 ? JSON.parse(q?.answers?.[0]?.answer)?.map(
-                    (item) => item.option
+                    (item) => item.option ?? item
                   )
                 : isJsonString(q?.answers?.[0]?.answer)
                 ? JSON.parse(q?.answers?.[0]?.answer)?.option
@@ -249,7 +250,7 @@ const AnswerFormPage = ({ params }) => {
                   isJsonString(q?.answers?.[0]?.answer) &&
                   _.isArray(JSON.parse(q?.answers?.[0]?.answer))
                     ? JSON.parse(q?.answers?.[0]?.answer)?.map(
-                        (item) => item.option
+                        (item) => item.option ?? item
                       )
                     : isJsonString(q?.answers?.[0]?.answer)
                     ? JSON.parse(q?.answers?.[0]?.answer)?.option
@@ -280,7 +281,7 @@ const AnswerFormPage = ({ params }) => {
                     name: `question-${item?.id}-${q?.id}-${qq?.id}`,
                     value:
                       isJsonString(answer) && _.isArray(JSON.parse(answer))
-                        ? JSON.parse(answer)?.map((item) => item.option)
+                        ? JSON.parse(answer)?.map((item) => item.option ?? item)
                         : isJsonString(answer)
                         ? JSON.parse(answer)?.option
                         : answer,
@@ -310,7 +311,9 @@ const AnswerFormPage = ({ params }) => {
                         name: `question-${item?.id}-${q?.id}-${qq?.id}-${qqq?.id}`,
                         value:
                           isJsonString(answer) && _.isArray(JSON.parse(answer))
-                            ? JSON.parse(answer)?.map((item) => item.option)
+                            ? JSON.parse(answer)?.map(
+                                (item) => item.option ?? item
+                              )
                             : isJsonString(answer)
                             ? JSON.parse(answer)?.option
                             : answer,
@@ -341,7 +344,9 @@ const AnswerFormPage = ({ params }) => {
                             value:
                               isJsonString(answer) &&
                               _.isArray(JSON.parse(answer))
-                                ? JSON.parse(answer)?.map((item) => item.option)
+                                ? JSON.parse(answer)?.map(
+                                    (item) => item.option ?? item
+                                  )
                                 : isJsonString(answer)
                                 ? JSON.parse(answer)?.option
                                 : answer,
@@ -460,6 +465,15 @@ const AnswerFormPage = ({ params }) => {
                 e,
               });
             }}
+          />
+        ) : null}
+        {self?.type === "Checkboxes with Leveling" ? (
+          <CheckboxWithLeveling
+            options={JSON.parse(self?.option)}
+            form={form}
+            parent_id={parent_id}
+            self={self}
+            postAnswer={postAnswer}
           />
         ) : null}
         {self?.type === "File Upload" ? (

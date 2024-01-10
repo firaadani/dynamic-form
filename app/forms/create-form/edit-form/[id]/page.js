@@ -1231,7 +1231,11 @@ const EditForm = ({ params }) => {
 
                 {/* SHOW ADD OPTIONS BUTTON IF TYPE: MULTIPLE CHOICE OR CHECKBOXES IS SELECTED */}
                 {splitted === null &&
-                ["Multiple Choice", "Checkboxes"]?.includes(
+                [
+                  "Multiple Choice",
+                  "Checkboxes",
+                  "Checkboxes with Leveling",
+                ]?.includes(
                   sectionValues?.[sectionField.name]?.questions?.[field.name]
                     ?.type
                 ) ? (
@@ -1338,7 +1342,11 @@ const EditForm = ({ params }) => {
                   </>
                 ) : null}
                 {splitted?.length === 2 &&
-                ["Multiple Choice", "Checkboxes"]?.includes(
+                [
+                  "Multiple Choice",
+                  "Checkboxes",
+                  "Checkboxes with Leveling",
+                ]?.includes(
                   sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
                     ?.questions?.[field.name]?.type
                 ) ? (
@@ -1445,7 +1453,11 @@ const EditForm = ({ params }) => {
                   </>
                 ) : null}
                 {splitted?.length === 3 &&
-                ["Multiple Choice", "Checkboxes"]?.includes(
+                [
+                  "Multiple Choice",
+                  "Checkboxes",
+                  "Checkboxes with Leveling",
+                ]?.includes(
                   sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
                     ?.questions?.[splitted[2]]?.questions?.[field.name]?.type
                 ) ? (
@@ -1554,7 +1566,11 @@ const EditForm = ({ params }) => {
                   </>
                 ) : null}
                 {splitted?.length === 4 &&
-                ["Multiple Choice", "Checkboxes"]?.includes(
+                [
+                  "Multiple Choice",
+                  "Checkboxes",
+                  "Checkboxes with leveling",
+                ]?.includes(
                   sectionValues?.[splitted[0]]?.questions?.[splitted[1]]
                     ?.questions?.[splitted[2]]?.questions?.[splitted[3]]
                     ?.questions?.[field.name]?.type
