@@ -7,12 +7,17 @@ import SideMenu from "./SideMenu";
 import { usePathname, useRouter } from "next/navigation";
 import { titleCase } from "@/lib/helpers";
 import axios from "axios";
+import { isDarkModeEnabled } from "@/lib/helpersClient";
 
 function AuthButton() {
   const { data: session, update, status } = useSession();
   const router = useRouter();
 
   const [currentSession, setCurrentSession] = useState({ exp: session?.exp });
+  // const [darkMode, setDarkMode] = useState(isDarkModeEnabled());
+
+  // console.log("darkMode :", { darkMode });
+
   const [error, setError] = useState(false);
 
   useEffect(() => {
@@ -96,7 +101,7 @@ function AuthButton() {
     <div className="w-full flex justify-between p-4 bg-white drop-shadow-lg ">
       <div className="flex gap-6">
         <SideMenu />
-        <p className="text-lg">
+        <p className="text-lg text-black">
           Dynamic Form &nbsp;
           <span className="text-gray-500 text-sm">
             {pathname === "/"

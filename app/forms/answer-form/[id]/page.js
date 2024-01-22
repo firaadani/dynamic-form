@@ -202,7 +202,8 @@ const AnswerFormPage = ({ params }) => {
   };
   const items = steps?.map((item, index) => ({
     key: item.index,
-    title: item.title,
+    title: `Step ${index + 1}`,
+    // description: index === current ? item?.title : "",
   }));
 
   useEffect(() => {
@@ -374,8 +375,9 @@ const AnswerFormPage = ({ params }) => {
             {self?.question}
             {self?.description && (
               <div
-                className="text-xs text-slate-700 mt-1"
+                className="text-xs !text-slate-700 mt-1"
                 dangerouslySetInnerHTML={{ __html: self?.description ?? "" }}
+                style={{ color: "black !important" }}
               />
             )}
           </div>
@@ -553,6 +555,9 @@ const AnswerFormPage = ({ params }) => {
         </p>
 
         <Steps className="my-10" current={current} items={items} />
+        <div className="text-center mb-10 font-bold text-lg">
+          {steps?.[current]?.title}
+        </div>
 
         <Form form={form} layout="vertical">
           {steps?.map((item, index) => {

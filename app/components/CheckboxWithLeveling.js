@@ -21,9 +21,9 @@ const CheckboxWithLeveling = ({
           `question-${parent_id}-${self?.id}`
         ]
   );
-  console.log("check value :", {
-    value,
-  });
+  // console.log("check value :", {
+  //   value,
+  // });
   const [checkboxOptions, setCheckboxOptions] = useState(
     options?.map((item, index) => ({
       ...item,

@@ -22,7 +22,7 @@ const SideMenu = () => {
 
   return (
     <>
-      <MenuOutlined onClick={toggle} />
+      <MenuOutlined onClick={toggle} className="text-black" />
       <Drawer
         title="Menu"
         placement={"left"}

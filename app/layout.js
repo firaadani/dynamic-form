@@ -12,6 +12,7 @@ import { authOptions } from "./api/auth/[...nextauth]/route";
 
 export default async function RootLayout({ children, pageProps }) {
   const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
       <head>
@@ -19,7 +20,7 @@ export default async function RootLayout({ children, pageProps }) {
         <link rel="apple-touch-icon" href="/icon.png"></link>
         <meta name="theme-color" content="#fff" />
       </head>
-      <body>
+      <body className="text-slate-700">
         <div className="w-full min-h-screen overflow-y-auto">
           <SessionProvider session={session}>
             <NavMenu />
