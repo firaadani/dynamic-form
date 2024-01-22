@@ -599,7 +599,11 @@ const EditForm = ({ params }) => {
           ]);
 
           if (
-            ["Multiple Choice", "Checkbox"].includes(q?.type) &&
+            [
+              "Multiple Choice",
+              "Checkbox",
+              "Checkboxes with Leveling",
+            ].includes(q?.type) &&
             !_.isEmpty(q?.option)
           ) {
             JSON.parse(q?.option)?.forEach((o, oIndex) => {
@@ -1937,7 +1941,10 @@ const EditForm = ({ params }) => {
 
           <Button
             type="dashed"
-            onClick={() => console.log(form.getFieldsValue())}
+            onClick={() => {
+              console.log("checked :", {});
+              console.log(form.getFieldsValue());
+            }}
             block
           >
             Check
