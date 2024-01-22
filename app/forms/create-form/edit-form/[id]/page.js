@@ -1264,6 +1264,7 @@ const EditForm = ({ params }) => {
                                   name={[subField.name, "option"]}
                                 >
                                   <Input
+                                    id={`input-${parent_id}-${field.name}-${subField.name}`}
                                     name={`questionOptions-${parent_id}-${field.name}`}
                                     onBlur={(e) => handleBlur({ e: e })}
                                     placeholder={`Input option #${
@@ -1272,8 +1273,17 @@ const EditForm = ({ params }) => {
                                   />
                                 </Form.Item>
                                 <CloseOutlined
-                                  onClick={() => {
-                                    subOpt.remove(subField.name);
+                                  id="deleteButton"
+                                  onClick={async () => {
+                                    const el = document.getElementById(
+                                      `input-${parent_id}-${field.name}-${subField.name}`
+                                    ).name;
+                                    await subOpt.remove(subField.name);
+                                    postQuestion({ name: el });
+                                    // console.log("closest", {
+                                    //   check: el,
+                                    //   values: form.getFieldsValue(),
+                                    // });
                                   }}
                                 />
                               </div>
