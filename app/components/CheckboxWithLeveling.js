@@ -50,7 +50,11 @@ const CheckboxWithLeveling = ({
         })
       );
     } else {
-      setValue((prev) => [...prev, e.target.value]);
+      if (Array.isArray(value)) {
+        setValue((prev) => [...prev, e.target.value]);
+      } else {
+        setValue([e.target.value]);
+      }
     }
   };
 
